@@ -2,18 +2,12 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.entity.User;
 import com.example.boardpractice.service.UserService;
-import com.example.boardpractice.web.dto.user.PasswordUpdateRequestDto;
-import com.example.boardpractice.web.dto.user.UserResponseDto;
-import com.example.boardpractice.web.dto.user.UserSignupRequestDto;
-import com.example.boardpractice.web.dto.user.UserUpdateRequestDto;
+import com.example.boardpractice.web.dto.user.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,11 +17,11 @@ public class UserApiController {
 
     @PostMapping("/users/signup")
     public ResponseEntity<?> createUser(@RequestBody @Valid UserSignupRequestDto userRequestDto){
-        User user = new User(
-                userRequestDto.getEmail(),
-                userRequestDto.getNickname(),
-                userRequestDto.getPassword()
-        );
+        User user = User.builder()
+                .email(userRequestDto.getEmail())
+                .nickname(userRequestDto.getNickname())
+                .password(userRequestDto.getPassword())
+                .build();
         User responseUser = userService.saveUser(user);
         return new ResponseEntity<>(new UserResponseDto(responseUser), HttpStatus.CREATED);
     }
@@ -40,15 +34,32 @@ public class UserApiController {
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
     }
 
+    @DeleteMapping("/users/me")
+    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto){
+        userService.deleteUser(userDeleteRequestDto.getEmail());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @PutMapping("/users/me/password")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto)
     {
-        User user = new User(
-                passwordUpdateRequestDto.getPassword(),
-                passwordUpdateRequestDto.getConfirmPassword()
-        );
+        User user = User.builder()
+                .password(passwordUpdateRequestDto.getPassword())
+                .confirmPassword(passwordUpdateRequestDto.getConfirmPassword())
+                .build();
         User responseUser = userService.updateUserPassword(user);
 
+        return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
+    }
+
+    @PostMapping("/user/login")
+    public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto){
+        User user = User.builder()
+                .email(userLoginRequestDto.getEmail())
+                .password(userLoginRequestDto.getPassword())
+                .build();
+        User responseUser = userService.loginUser(user);
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
     }
 

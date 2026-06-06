@@ -1,8 +1,6 @@
 package com.example.boardpractice.web;
 
-import com.example.boardpractice.web.dto.user.BaseUserDto;
-import com.example.boardpractice.web.dto.user.UserSignupRequestDto;
-import com.example.boardpractice.web.dto.user.UserUpdateRequestDto;
+import com.example.boardpractice.web.dto.user.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,8 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -221,4 +219,81 @@ public class UserControllerTest {
         // Then 결과 검증 - 상태코드 확인
         resultActions.andExpect(status().isUnprocessableContent());
     }
+
+
+    // 회원 탈퇴 테스트
+    @Test
+    public void delete_user_success_test() throws Exception {
+        // Given 데이터 세팅
+        UserDeleteRequestDto userDeleteRequestDto = new UserDeleteRequestDto();
+        userDeleteRequestDto.setEmail("russell@gmail.com");
+
+        String requestBody = om.writeValueAsString(userDeleteRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(delete("/users/me")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isOk());
+    }
+
+
+    // 회원 탈퇴 이메일 오류 테스트
+    @Test
+    public void delete_user_faill_test() throws Exception {
+        // Given 데이터 세팅
+        UserDeleteRequestDto userDeleteRequestDto = new UserDeleteRequestDto();
+        userDeleteRequestDto.setEmail("@gmail.com");
+
+        String requestBody = om.writeValueAsString(userDeleteRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(delete("/users/me")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isUnprocessableContent());
+    }
+
+    // 유저 로그인 테스트
+    @Test
+    public void login_success_test() throws Exception {
+        // Given 데이터 세팅
+        UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
+        userLoginRequestDto.setEmail("russell@gmail.com");
+        userLoginRequestDto.setPassword("Asdf!12345");
+
+        String requestBody = om.writeValueAsString(userLoginRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(post("/user/login")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isOk())
+                .andDo(print());
+    }
+
 }

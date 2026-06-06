@@ -30,4 +30,13 @@ public class UserService {
 
         return new User(1L);
     }
+
+    public void deleteUser(String email){
+        Map<String, String> database = new HashMap<>();
+    }
+
+    public User loginUser(User user){
+        Map<String, String> database = new HashMap<>();
+        return new User(1L);
+    }
 }
