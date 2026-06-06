@@ -13,7 +13,8 @@ import lombok.Setter;
 public class BaseUserDto {
 
     @NotBlank
-    @Size(min = 1,max = 10)
+    @Pattern(regexp = "^\\S{1,10}$")
+   // @Size(min = 1,max = 10)
     private String nickname;
 
 }

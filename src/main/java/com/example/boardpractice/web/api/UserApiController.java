@@ -4,6 +4,8 @@ import com.example.boardpractice.entity.User;
 import com.example.boardpractice.service.UserService;
 import com.example.boardpractice.web.dto.user.BaseUserDto;
 import com.example.boardpractice.web.dto.user.UserResponseDto;
+import com.example.boardpractice.web.dto.user.UserSignupRequestDto;
+import com.example.boardpractice.web.dto.user.UserUpdateRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,7 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<?> createUser(@RequestBody @Valid BaseUserDto userRequestDto){
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserSignupRequestDto userRequestDto){
         User user = new User(
                 userRequestDto.getEmail(),
                 userRequestDto.getNickname(),
@@ -31,6 +33,11 @@ public class UserApiController {
     }
 
     @PutMapping("/users/me")
-    public ResponseEntity<?> updateUser()
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto)
+    {
+        User responseUser = userService.updateUser(userUpdateRequestDto.getNickname());
+
+        return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
+    }
 
 }

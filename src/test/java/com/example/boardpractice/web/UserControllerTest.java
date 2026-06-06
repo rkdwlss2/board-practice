@@ -1,6 +1,8 @@
 package com.example.boardpractice.web;
 
 import com.example.boardpractice.web.dto.user.BaseUserDto;
+import com.example.boardpractice.web.dto.user.UserSignupRequestDto;
+import com.example.boardpractice.web.dto.user.UserUpdateRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -26,7 +29,7 @@ public class UserControllerTest {
     @Test
     public void create_success_test() throws Exception {
         // Given 데이터 세팅
-        BaseUserDto userRequestDto = new BaseUserDto();
+       UserSignupRequestDto userRequestDto = new UserSignupRequestDto();
         userRequestDto.setEmail("rkdwlss2@google.com");
         userRequestDto.setPassword("Kang!1234");
         userRequestDto.setNickname("kang");
@@ -49,7 +52,7 @@ public class UserControllerTest {
     @Test
     public void email_success_test() throws Exception {
         // Given 데이터 세팅
-        BaseUserDto userRequestDto = new BaseUserDto();
+       UserSignupRequestDto userRequestDto = new UserSignupRequestDto();
         userRequestDto.setEmail("kang@google.com");
         userRequestDto.setPassword("Kang!1234");
         userRequestDto.setNickname("kang");
@@ -74,7 +77,7 @@ public class UserControllerTest {
     @Test
     public void email_fail_test() throws Exception {
         // Given 데이터 세팅
-        BaseUserDto userRequestDto = new BaseUserDto();
+       UserSignupRequestDto userRequestDto = new UserSignupRequestDto();
         userRequestDto.setEmail("@google.com");
         userRequestDto.setPassword("Kang!1234");
         userRequestDto.setNickname("kang");
@@ -99,7 +102,7 @@ public class UserControllerTest {
     @Test
     public void password_fail_test() throws Exception {
         // Given 데이터 세팅
-        BaseUserDto userRequestDto = new BaseUserDto();
+       UserSignupRequestDto userRequestDto = new UserSignupRequestDto();
         userRequestDto.setEmail("kang2@google.com");
         userRequestDto.setPassword("ang!1234");
         userRequestDto.setNickname("kang");
@@ -125,7 +128,7 @@ public class UserControllerTest {
     @Test
     public void password_Symbols_fail_test() throws Exception {
         // Given 데이터 세팅
-        BaseUserDto userRequestDto = new BaseUserDto();
+       UserSignupRequestDto userRequestDto = new UserSignupRequestDto();
         userRequestDto.setEmail("kang2@google.com");
         userRequestDto.setPassword("Kang1234");
         userRequestDto.setNickname("kang");
@@ -135,6 +138,78 @@ public class UserControllerTest {
 
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(post("/users/signup")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isUnprocessableContent());
+    }
+
+    // 닉네임 공백 테스트
+    @Test
+    public void update_nickname_blank_fail_test() throws Exception {
+        // Given 데이터 세팅
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
+        userUpdateRequestDto.setNickname("");
+
+        String requestBody = om.writeValueAsString(userUpdateRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(put("/users/me")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isUnprocessableContent());
+    }
+
+    // 닉네임 띄어쓰기 테스트
+    @Test
+    public void update_nickname_space_fail_test() throws Exception {
+        // Given 데이터 세팅
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
+        userUpdateRequestDto.setNickname("e e");
+
+        String requestBody = om.writeValueAsString(userUpdateRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(put("/users/me")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isUnprocessableContent());
+    }
+
+    // 닉네임 1~10 자리 테스트
+    @Test
+    public void update_nickname_size_fail_test() throws Exception {
+        // Given 데이터 세팅
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
+        userUpdateRequestDto.setNickname("12345678910");
+
+        String requestBody = om.writeValueAsString(userUpdateRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(put("/users/me")
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
