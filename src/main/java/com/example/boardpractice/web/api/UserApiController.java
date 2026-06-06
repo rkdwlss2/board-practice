@@ -2,7 +2,7 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.entity.User;
 import com.example.boardpractice.service.UserService;
-import com.example.boardpractice.web.dto.user.BaseUserDto;
+import com.example.boardpractice.web.dto.user.PasswordUpdateRequestDto;
 import com.example.boardpractice.web.dto.user.UserResponseDto;
 import com.example.boardpractice.web.dto.user.UserSignupRequestDto;
 import com.example.boardpractice.web.dto.user.UserUpdateRequestDto;
@@ -35,7 +35,19 @@ public class UserApiController {
     @PutMapping("/users/me")
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto)
     {
-        User responseUser = userService.updateUser(userUpdateRequestDto.getNickname());
+        User responseUser = userService.updateUserNickname(userUpdateRequestDto.getNickname());
+
+        return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
+    }
+
+    @PutMapping("/users/me/password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto)
+    {
+        User user = new User(
+                passwordUpdateRequestDto.getPassword(),
+                passwordUpdateRequestDto.getConfirmPassword()
+        );
+        User responseUser = userService.updateUserPassword(user);
 
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
     }

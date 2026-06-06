@@ -18,11 +18,16 @@ public class UserService {
         return new User(1L);
     }
 
-    public User updateUser(String nickname){
+    public User updateUserNickname(String nickname){
         Map<String,String> database = new HashMap<>();
         if (!database.containsKey(nickname)){
 
         }
+        return new User(1L);
+    }
+
+    public User updateUserPassword(User user){
+
         return new User(1L);
     }
 }
