@@ -2,7 +2,7 @@ package com.example.boardpractice.web;
 
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
-import com.example.boardpractice.web.dto.user.UserSignupRequestDto;
+import com.example.boardpractice.web.dto.Board.PostRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,8 +16,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -80,5 +80,52 @@ public class BoardControllerTest {
         // Then 결과 검증 - 상태코드 확인 , 게시판ID확인
         assertThat(postDetailResponseDto.getBoardId()).isEqualTo(2025L);
         resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void board_update_success_test() throws Exception {
+        // Given 데이터 세팅
+        Long boardId = 2024L;
+        PostRequestDto postRequestDto = new PostRequestDto();
+        postRequestDto.setTitle("게시물 제목");
+        postRequestDto.setContent("게시물 내용123123");
+
+        String requestBody = om.writeValueAsString(postRequestDto);
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(put("/boards/posts/{boardId}",boardId)
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+
+
+        // Then 결과 검증 - 상태코드 확인 , 게시판ID확인
+        resultActions.andExpect(status().isOk())
+                .andDo(print());;
+    }
+
+    @Test
+    public void board_create_success_test() throws Exception {
+        // Given 데이터 세팅
+        PostRequestDto postRequestDto = new PostRequestDto();
+        postRequestDto.setTitle("게시물 제목11");
+        postRequestDto.setContent("게시물 내용1223");
+
+        String requestBody = om.writeValueAsString(postRequestDto);
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(post("/boards/posts")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+
+
+        // Then 결과 검증 - 상태코드 확인 , 게시판ID확인
+        resultActions.andExpect(status().isOk())
+                .andDo(print());;
     }
 }

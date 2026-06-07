@@ -1,5 +1,6 @@
 package com.example.boardpractice.service;
 
+import com.example.boardpractice.entity.Post;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
 import org.springframework.stereotype.Service;
@@ -53,5 +54,13 @@ public class BoardService {
                 .updatedDate("2014-01-02 00:01:00")
                 .build();
         return postDetailResponseDto;
+    }
+
+    public void updatePost(Post post){
+        // repositroy.updatePost(); 구현필요
+    }
+
+    public void createPost(Post post){
+        // repositroy.createPost(); 구현필요
     }
 }
