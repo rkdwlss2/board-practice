@@ -59,7 +59,7 @@ public class UserApiController {
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
     }
 
-    @PostMapping("/user/login")
+    @PostMapping("/users/login")
     public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto){
         User user = User.builder()
                 .email(userLoginRequestDto.getEmail())

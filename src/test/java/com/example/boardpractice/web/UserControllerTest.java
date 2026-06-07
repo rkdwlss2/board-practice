@@ -282,7 +282,7 @@ public class UserControllerTest {
         System.out.println("requestBody = "+requestBody);
 
         // When 테스트 동작 수행 - API 호출
-        ResultActions resultActions = mvc.perform(post("/user/login")
+        ResultActions resultActions = mvc.perform(post("/users/login")
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
