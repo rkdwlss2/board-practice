@@ -2,9 +2,9 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.entity.Comment;
 import com.example.boardpractice.service.CommentService;
-import com.example.boardpractice.web.dto.Board.CommentDeleteRequestDto;
-import com.example.boardpractice.web.dto.Board.CommentRequestDto;
-import com.example.boardpractice.web.dto.Board.CommentResponseDto;
+import com.example.boardpractice.web.dto.comment.CommentDeleteRequestDto;
+import com.example.boardpractice.web.dto.comment.CommentRequestDto;
+import com.example.boardpractice.web.dto.comment.CommentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

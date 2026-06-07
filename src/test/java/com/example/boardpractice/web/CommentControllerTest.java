@@ -1,6 +1,8 @@
 package com.example.boardpractice.web;
 
-import com.example.boardpractice.web.dto.Board.*;
+import com.example.boardpractice.web.dto.comment.CommentDeleteRequestDto;
+import com.example.boardpractice.web.dto.comment.CommentRequestDto;
+import com.example.boardpractice.web.dto.comment.CommentResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

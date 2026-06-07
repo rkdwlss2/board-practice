@@ -1,4 +1,4 @@
-package com.example.boardpractice.web.dto.Board;
+package com.example.boardpractice.web.dto.comment;
 
 import lombok.*;
 

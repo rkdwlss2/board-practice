@@ -1,7 +1,7 @@
 package com.example.boardpractice.service;
 
 import com.example.boardpractice.entity.Comment;
-import com.example.boardpractice.web.dto.Board.CommentResponseDto;
+import com.example.boardpractice.web.dto.comment.CommentResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
