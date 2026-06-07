@@ -2,13 +2,18 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.entity.Post;
 import com.example.boardpractice.service.BoardService;
+import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
 import com.example.boardpractice.web.dto.Board.PostRequestDto;
+import com.example.boardpractice.web.dto.file.FileInfoDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardApiController {
 
+    private final FileService fileService;
     private final BoardService boardService;
 
     @GetMapping("/boards/posts")
@@ -49,6 +55,17 @@ public class BoardApiController {
                 .content(postRequestDto.getContent())
                 .build();
         boardService.createPost(post);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/boards/posts/{boardId}/image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addFile(
+            @RequestPart("multipartFile")
+            MultipartFile file,@PathVariable Long boardId) throws FileUploadException {
+        FileInfoDto fileinfo = fileService.uploadFile(file);	//서버 내부 스토리지 저장
+        //Long success = fileService.insertFileInfo(fileinfo);	//데이터베이스에 파일 정보 저장
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
