@@ -22,8 +22,8 @@ public class LikeApiController {
     }
 
     @DeleteMapping("/boards/likes/{boardId}")
-    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId){
-        likeService.increaseLikes(boardId);
+    public ResponseEntity<?> decreaseLikes(@PathVariable Long boardId){
+        likeService.decreaseLikes(boardId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
