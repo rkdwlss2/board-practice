@@ -5,6 +5,7 @@ import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.service.UserService;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
 import com.example.boardpractice.web.dto.user.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -33,9 +34,10 @@ public class UserApiController {
     }
 
     @PutMapping("/users/me")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto)
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto, HttpSession session)
     {
-        User responseUser = userService.updateUserNickname(userUpdateRequestDto.getNickname());
+        String email = (String) session.getAttribute("LOGIN_USER");
+        User responseUser = userService.updateUserNickname(userUpdateRequestDto.getNickname(),email);
 
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
     }
@@ -48,12 +50,14 @@ public class UserApiController {
 
 
     @PutMapping("/users/me/password")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto)
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto, HttpSession session)
     {
         User user = User.builder()
                 .password(passwordUpdateRequestDto.getPassword())
                 .confirmPassword(passwordUpdateRequestDto.getConfirmPassword())
                 .build();
+        String email = (String) session.getAttribute("LOGIN_USER");
+        user.setEmail(email);
         User responseUser = userService.updateUserPassword(user);
 
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
