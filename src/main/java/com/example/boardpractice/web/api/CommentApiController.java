@@ -34,19 +34,19 @@ public class CommentApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/boards/posts/{boardId}/comment")
-    public ResponseEntity<?> updateComment(@PathVariable Long boardId,@RequestBody CommentRequestDto commentRequestDto){
+    @PutMapping("/boards/posts/{boardId}/comments/{commentId}")    public ResponseEntity<?> updateComment(@PathVariable Long boardId,@PathVariable Long commentId,@RequestBody CommentRequestDto commentRequestDto){
         Comment comment = Comment.builder()
                 .boardId(boardId)
+                .commentId(commentId)
                 .content(commentRequestDto.getContent())
                 .build();
         commentService.updateComment(comment);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/boards/posts/{boardId}/comment")
-    public ResponseEntity<?> deleteComment(@PathVariable Long boardId,@RequestBody CommentDeleteRequestDto commentDeleteRequestDto){
-        commentService.deleteComment(commentDeleteRequestDto.getCommentId());
+    @DeleteMapping("/boards/posts/{boardId}/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long boardId,@PathVariable Long commentId,@RequestBody CommentDeleteRequestDto commentDeleteRequestDto){
+        commentService.deleteComment(commentDeleteRequestDto.getCommentId(),boardId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -43,8 +43,8 @@ public class CommentService {
         // commentRepository.updateComment(comment);
     }
 
-    public void deleteComment(Long commentId){
-        // commentRepository.deleteComment(commentId);
+    public void deleteComment(Long commentId,Long boardId){
+        // commentRepository.deleteComment(commentId,boardId);
     }
 
 }

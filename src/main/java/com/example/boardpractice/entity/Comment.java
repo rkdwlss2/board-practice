@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class Comment {
+    private Long commentId;
     private Long boardId;
     private String content;
 }
