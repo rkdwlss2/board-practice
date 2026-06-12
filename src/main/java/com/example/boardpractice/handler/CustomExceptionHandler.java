@@ -1,6 +1,7 @@
 package com.example.boardpractice.handler;
 
 import com.example.boardpractice.exception.NotFoundException;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -24,6 +25,11 @@ public class CustomExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<String> handleFileUploadException(FileUploadException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(ClassNotFoundException.class)
