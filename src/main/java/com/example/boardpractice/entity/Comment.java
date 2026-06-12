@@ -13,4 +13,10 @@ public class Comment {
     private Long commentId;
     private Long boardId;
     private String content;
+
+    private String writer;
+
+    private String writeDate;
+    private String createDate;
+    private String updatedDate;
 }
