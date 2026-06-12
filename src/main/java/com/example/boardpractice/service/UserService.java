@@ -1,6 +1,7 @@
 package com.example.boardpractice.service;
 
 import com.example.boardpractice.entity.User;
+import com.example.boardpractice.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -8,9 +9,9 @@ import java.util.Map;
 
 @Service
 public class UserService {
+    private final Map<String,String> database = new HashMap<>();
 
     public User saveUser(User user){
-        Map<String,String> database = new HashMap<>();
 
         if (!database.containsKey(user.getEmail())){
             database.put(user.getEmail(),user.getPassword());
@@ -19,7 +20,6 @@ public class UserService {
     }
 
     public User updateUserNickname(String nickname){
-        Map<String,String> database = new HashMap<>();
         if (!database.containsKey(nickname)){
 
         }
@@ -36,7 +36,12 @@ public class UserService {
     }
 
     public User loginUser(User user){
-        Map<String, String> database = new HashMap<>();
+        String storedPassword = database.get(user.getEmail());
+
+        if (storedPassword == null || !storedPassword.equals(user.getPassword())) {
+            throw new NotFoundException("이메일 또는 비밀번호가 올바르지 않습니다.");
+        }
+
         return new User(1L);
     }
 }
