@@ -56,11 +56,17 @@ public class BoardService {
         return postDetailResponseDto;
     }
 
-    public void updatePost(Post post){
-        // repositroy.updatePost(); 구현필요
+    public void updatePost(Post post) {
+//        Post dbPost = repository.get(post.getBoardId());
+//        if (dbPost==null){
+//           throw new RuntimeException("해당 글의 ID가 없습니다.");
+//        }
+//         repositroy.updatePost(); //구현필요
     }
 
     public void createPost(Post post){
-        // repositroy.createPost(); 구현필요
+        // Long newId = idGenerator.getAndIncrement();
+        //
+        // repositroy.createPost(newId); 구현필요
     }
 }
