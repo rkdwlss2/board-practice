@@ -57,7 +57,7 @@ public class UserApiController {
                 .confirmPassword(passwordUpdateRequestDto.getConfirmPassword())
                 .build();
         String email = (String) session.getAttribute("LOGIN_USER");
-        user.setEmail(email);
+        user.updateEmailUser(email);
         User responseUser = userService.updateUserPassword(user);
 
         return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);

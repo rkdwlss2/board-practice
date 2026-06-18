@@ -1,5 +1,8 @@
 package com.example.boardpractice.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Post {
+    @Id @GeneratedValue
     private Long boardId;
     private String title;
     private String content;

@@ -27,7 +27,7 @@ public class UserService {
         if (user == null){
             throw new NotFoundException("사용자를 찾을수 없습니다.");
         }
-        user.setNickname(nickname);
+        user.makeUserNickname(nickname);
         return user;
     }
 
@@ -41,7 +41,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
 
-        user.setPassword(user.getConfirmPassword());
+        user.checkPasswordConfirm(user.getConfirmPassword());
         return userReq;
     }
 
