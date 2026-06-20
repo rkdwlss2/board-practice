@@ -31,4 +31,16 @@ class UsersTest {
         entityManager.persist(users);
         entityManager.flush();
     }
+
+    @Test
+    @Rollback(false)
+    void persistUserTest(){
+        //Users user = new Users("tester@adapterz.kr", "123aS!", "Adapterz");
+        Users user = Users.builder()
+                .email("tester@adapterz.kr")
+                .password("1234as")
+                .nickname("russell")
+                .build();
+        entityManager.persist(user);
+    }
 }

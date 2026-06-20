@@ -3,6 +3,7 @@ package com.example.boardpractice.service;
 import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Service
 public class BoardService {
+    @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPosts(int page,int size){
         List<PostResponseDto> postList = new ArrayList<>();
         postList.add(
@@ -41,6 +43,7 @@ public class BoardService {
         return postList;
     }
 
+    @Transactional(readOnly = true)
     public PostDetailResponseDto getPost(Long boardId){
         PostDetailResponseDto postDetailResponseDto = PostDetailResponseDto.builder()
                 .boardId(2025L)

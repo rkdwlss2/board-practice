@@ -5,8 +5,8 @@ import lombok.*;
 
 @Getter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Users {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
