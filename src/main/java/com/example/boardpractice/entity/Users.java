@@ -3,6 +3,9 @@ package com.example.boardpractice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -26,6 +29,16 @@ public class Users {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @OneToMany(mappedBy = "user")
+    private List<Boards> boards = new ArrayList<>();;
+
+    public void addBoards(Boards board) {
+        this.boards.add(board); // User → board 컬렉션 추가
+        if (board.getUser() !=this){
+            board.assignUser(this);   // board → User 참조 설정
+        }
+    }
 
     public Users(Long userId){
         this.userId = userId;
