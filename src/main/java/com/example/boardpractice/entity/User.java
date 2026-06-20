@@ -20,6 +20,10 @@ public class User {
     private String confirmPassword;
     private String nickname;
 
+    private String writeDate;
+    private String createDate;
+    private String updatedDate;
+
     public User(Long id){
         this.id = id;
     }
