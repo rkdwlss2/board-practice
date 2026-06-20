@@ -13,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Comment {
-    @Id @GeneratedValue
-    private Long commentId;
-    private Long boardId;
+public class Like {
+    @Id
+    @GeneratedValue
+    private Long likeId;
     private Long userId;
-    private String content;
-    private String deleteDate;
+    private Long boardId;
     private String createDate;
     private String updatedDate;
+    private String deleteDate;
 }

@@ -14,18 +14,18 @@ import lombok.*;
 @Entity
 public class User {
     @Id @GeneratedValue
-    private Long id;
+    private Long userId;
+    private String nickname;
     private String email;
     private String password;
     private String confirmPassword;
-    private String nickname;
-
-    private String writeDate;
+    private String deleteDate;
     private String createDate;
     private String updatedDate;
+    private String userImageUrl;
 
-    public User(Long id){
-        this.id = id;
+    public User(Long userId){
+        this.userId = userId;
     }
 
     public void makeUserNickname(String nickname){

@@ -1,9 +1,6 @@
 package com.example.boardpractice.web.api;
 
-import com.example.boardpractice.entity.Post;
 import com.example.boardpractice.service.LikeService;
-import com.example.boardpractice.web.dto.Board.PostRequestDto;
-import lombok.Delegate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

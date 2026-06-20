@@ -13,19 +13,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Post {
+public class Board {
     @Id @GeneratedValue
     private Long boardId;
+    private Long userId;
     private String title;
     private String content;
-
     private Long likeCount;
     private Long commentCount;
     private Long viewCount;
-
-    private String writeDate;
     private String createDate;
     private String updatedDate;
-
+    private String deleteDate;
     private String boardImageUrl;
 }

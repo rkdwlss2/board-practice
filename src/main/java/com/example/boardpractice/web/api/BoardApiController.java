@@ -1,6 +1,6 @@
 package com.example.boardpractice.web.api;
 
-import com.example.boardpractice.entity.Post;
+import com.example.boardpractice.entity.Board;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
@@ -38,23 +38,23 @@ public class BoardApiController {
 
     @PutMapping("/boards/posts/{boardId}")
     public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
-        Post post = Post.builder()
+        Board board = Board.builder()
                 .boardId(boardId)
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
                 .build();
 
-        boardService.updatePost(post);
+        boardService.updatePost(board);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/boards/posts")
     public ResponseEntity<?> createDetailPost(@RequestBody PostRequestDto postRequestDto){
-        Post post = Post.builder()
+        Board board = Board.builder()
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
                 .build();
-        boardService.createPost(post);
+        boardService.createPost(board);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

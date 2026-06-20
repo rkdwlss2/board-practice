@@ -1,6 +1,6 @@
 package com.example.boardpractice.service;
 
-import com.example.boardpractice.entity.Post;
+import com.example.boardpractice.entity.Board;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
 import org.springframework.stereotype.Service;
@@ -56,7 +56,7 @@ public class BoardService {
         return postDetailResponseDto;
     }
 
-    public void updatePost(Post post) {
+    public void updatePost(Board board) {
 //        Post dbPost = repository.get(post.getBoardId());
 //        if (dbPost==null){
 //           throw new RuntimeException("해당 글의 ID가 없습니다.");
@@ -64,7 +64,7 @@ public class BoardService {
 //         repositroy.updatePost(); //구현필요
     }
 
-    public void createPost(Post post){
+    public void createPost(Board board){
         // Long newId = idGenerator.getAndIncrement();
         //
         // repositroy.createPost(newId); 구현필요
