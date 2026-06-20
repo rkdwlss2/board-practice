@@ -1,6 +1,6 @@
 package com.example.boardpractice.service;
 
-import com.example.boardpractice.entity.User;
+import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -9,54 +9,54 @@ import java.util.Map;
 
 @Service
 public class UserService {
-    private final Map<String,User> database = new HashMap<>();
+    private final Map<String, Users> database = new HashMap<>();
 
-    public User saveUser(User user){
+    public Users saveUser(Users users){
 
-        if (!database.containsKey(user.getEmail())){
-            database.put(user.getEmail(),
-                    User.builder()
-                            .email(user.getPassword())
+        if (!database.containsKey(users.getEmail())){
+            database.put(users.getEmail(),
+                    Users.builder()
+                            .email(users.getPassword())
                             .build());
         }
-        return new User(1L);
+        return new Users(1L);
     }
 
-    public User updateUserNickname(String nickname,String email){
-        User user = database.get(email);
-        if (user == null){
+    public Users updateUserNickname(String nickname, String email){
+        Users users = database.get(email);
+        if (users == null){
             throw new NotFoundException("사용자를 찾을수 없습니다.");
         }
-        user.makeUserNickname(nickname);
-        return user;
+        users.makeUserNickname(nickname);
+        return users;
     }
 
-    public User updateUserPassword(User user){
-        User userReq = database.get(user.getEmail());
-        if (user==null){
+    public Users updateUserPassword(Users users){
+        Users usersReq = database.get(users.getEmail());
+        if (users ==null){
             throw new NotFoundException("사용자를 찾을수 없습니다.");
         }
 
-        if (!user.getPassword().equals(user.getConfirmPassword())){
+        if (!users.getPassword().equals(users.getConfirmPassword())){
             throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
 
-        user.checkPasswordConfirm(user.getConfirmPassword());
-        return userReq;
+        users.checkPasswordConfirm(users.getConfirmPassword());
+        return usersReq;
     }
 
     public void deleteUser(String email){
         Map<String, String> database = new HashMap<>();
     }
 
-    public User loginUser(User user){
-        User userReq = database.get(user.getEmail());
-        String storedPassword = userReq.getPassword();
+    public Users loginUser(Users users){
+        Users usersReq = database.get(users.getEmail());
+        String storedPassword = usersReq.getPassword();
 
-        if (storedPassword == null || !storedPassword.equals(user.getPassword())) {
+        if (storedPassword == null || !storedPassword.equals(users.getPassword())) {
             throw new NotFoundException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        return userReq;
+        return usersReq;
     }
 }

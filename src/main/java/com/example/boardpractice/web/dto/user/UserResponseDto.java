@@ -1,6 +1,6 @@
 package com.example.boardpractice.web.dto.user;
 
-import com.example.boardpractice.entity.User;
+import com.example.boardpractice.entity.Users;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +11,9 @@ public class UserResponseDto
     private Long id;
     private String email;
     private String nickname;
-    public UserResponseDto(User user){
-        this.id = user.getUserId();
-        this.email= user.getEmail();
-        this.nickname = user.getNickname();
+    public UserResponseDto(Users users){
+        this.id = users.getUserId();
+        this.email= users.getEmail();
+        this.nickname = users.getNickname();
     }
 }

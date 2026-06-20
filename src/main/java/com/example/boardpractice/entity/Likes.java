@@ -2,6 +2,7 @@ package com.example.boardpractice.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,13 +14,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Comment {
-    @Id @GeneratedValue
-    private Long commentId;
-    private Long boardId;
+public class Likes {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long likeId;
     private Long userId;
-    private String content;
-    private String deleteDate;
+    private Long boardId;
     private String createDate;
     private String updatedDate;
+    private String deleteDate;
 }

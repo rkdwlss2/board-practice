@@ -1,6 +1,6 @@
 package com.example.boardpractice.web.api;
 
-import com.example.boardpractice.entity.User;
+import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.service.UserService;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
@@ -24,22 +24,22 @@ public class UserApiController {
 
     @PostMapping("/users/signup")
     public ResponseEntity<?> createUser(@RequestBody @Valid UserSignupRequestDto userRequestDto){
-        User user = User.builder()
+        Users users = Users.builder()
                 .email(userRequestDto.getEmail())
                 .nickname(userRequestDto.getNickname())
                 .password(userRequestDto.getPassword())
                 .build();
-        User responseUser = userService.saveUser(user);
-        return new ResponseEntity<>(new UserResponseDto(responseUser), HttpStatus.CREATED);
+        Users responseUsers = userService.saveUser(users);
+        return new ResponseEntity<>(new UserResponseDto(responseUsers), HttpStatus.CREATED);
     }
 
     @PutMapping("/users/me")
     public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto, HttpSession session)
     {
         String email = (String) session.getAttribute("LOGIN_USER");
-        User responseUser = userService.updateUserNickname(userUpdateRequestDto.getNickname(),email);
+        Users responseUsers = userService.updateUserNickname(userUpdateRequestDto.getNickname(),email);
 
-        return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
     @DeleteMapping("/users/me")
@@ -52,25 +52,25 @@ public class UserApiController {
     @PutMapping("/users/me/password")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto, HttpSession session)
     {
-        User user = User.builder()
+        Users users = Users.builder()
                 .password(passwordUpdateRequestDto.getPassword())
                 .confirmPassword(passwordUpdateRequestDto.getConfirmPassword())
                 .build();
         String email = (String) session.getAttribute("LOGIN_USER");
-        user.updateEmailUser(email);
-        User responseUser = userService.updateUserPassword(user);
+        users.updateEmailUser(email);
+        Users responseUsers = userService.updateUserPassword(users);
 
-        return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
     @PostMapping("/users/login")
     public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto){
-        User user = User.builder()
+        Users users = Users.builder()
                 .email(userLoginRequestDto.getEmail())
                 .password(userLoginRequestDto.getPassword())
                 .build();
-        User responseUser = userService.loginUser(user);
-        return new ResponseEntity<>(new UserResponseDto(responseUser),HttpStatus.OK);
+        Users responseUsers = userService.loginUser(users);
+        return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
     @PostMapping(value = "/users/me/image",

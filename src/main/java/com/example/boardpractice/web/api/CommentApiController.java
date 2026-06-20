@@ -1,6 +1,6 @@
 package com.example.boardpractice.web.api;
 
-import com.example.boardpractice.entity.Comment;
+import com.example.boardpractice.entity.Comments;
 import com.example.boardpractice.service.CommentService;
 import com.example.boardpractice.web.dto.comment.CommentDeleteRequestDto;
 import com.example.boardpractice.web.dto.comment.CommentRequestDto;
@@ -26,7 +26,7 @@ public class CommentApiController {
 
     @PostMapping("/boards/posts/{boardId}/comment")
     public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody CommentRequestDto commentRequestDto){
-        Comment comment = Comment.builder()
+        Comments comment = Comments.builder()
                 .boardId(boardId)
                 .content(commentRequestDto.getContent())
                 .build();
@@ -35,7 +35,7 @@ public class CommentApiController {
     }
 
     @PutMapping("/boards/posts/{boardId}/comments/{commentId}")    public ResponseEntity<?> updateComment(@PathVariable Long boardId,@PathVariable Long commentId,@RequestBody CommentRequestDto commentRequestDto){
-        Comment comment = Comment.builder()
+        Comments comment = Comments.builder()
                 .boardId(boardId)
                 .commentId(commentId)
                 .content(commentRequestDto.getContent())

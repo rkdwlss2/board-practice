@@ -1,6 +1,6 @@
 package com.example.boardpractice.service;
 
-import com.example.boardpractice.entity.Comment;
+import com.example.boardpractice.entity.Comments;
 import com.example.boardpractice.web.dto.comment.CommentResponseDto;
 import org.springframework.stereotype.Service;
 
@@ -35,11 +35,11 @@ public class CommentService {
         return commentList;
     }
 
-    public void createComment(Comment comment){
+    public void createComment(Comments comment){
         // commentRepository.createComment(comment);
     }
 
-    public void updateComment(Comment comment){
+    public void updateComment(Comments comment){
         // commentRepository.updateComment(comment);
     }
 
