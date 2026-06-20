@@ -19,7 +19,6 @@ public class Comment {
     private Long boardId;
     private String content;
 
-    private String writer;
 
     private String writeDate;
     private String createDate;

@@ -18,7 +18,6 @@ public class Post {
     private Long boardId;
     private String title;
     private String content;
-    private String writer;
 
     private Long likeCount;
     private Long commentCount;
