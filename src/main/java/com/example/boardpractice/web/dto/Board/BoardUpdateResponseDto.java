@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostCreateResponseDto {
+public class BoardUpdateResponseDto {
     private Long boardId;
 }

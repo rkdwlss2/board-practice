@@ -3,11 +3,10 @@ package com.example.boardpractice.web.dto.comment;
 import lombok.*;
 
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentResponseDto {
+public class CommentUpdateResponseDto {
     private Long commentId;
     private String writer;
     private String content;

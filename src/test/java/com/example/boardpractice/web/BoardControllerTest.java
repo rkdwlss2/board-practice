@@ -1,8 +1,8 @@
 package com.example.boardpractice.web;
 
-import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
-import com.example.boardpractice.web.dto.Board.PostResponseDto;
-import com.example.boardpractice.web.dto.Board.PostRequestDto;
+import com.example.boardpractice.web.dto.Board.BoardDetailResponseDto;
+import com.example.boardpractice.web.dto.Board.BoardResponseDto;
+import com.example.boardpractice.web.dto.Board.BoardRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,16 +46,16 @@ public class BoardControllerTest {
                 .getResponse()
                 .getContentAsString();
         // 직렬화 수행
-        List<PostResponseDto> postResponseDtoList = om.readValue(
+        List<BoardResponseDto> boardResponseDtoList = om.readValue(
                 responseBody,
-                new TypeReference<List<PostResponseDto>>() {
+                new TypeReference<List<BoardResponseDto>>() {
                 }
         );
 
         System.out.println("responseBody = "+responseBody);
         // Then 결과 검증 - 상태코드 확인
-        assertThat(postResponseDtoList).hasSize(2);
-        assertThat(postResponseDtoList.get(0).getBoardId()).isEqualTo(2024L);
+        assertThat(boardResponseDtoList).hasSize(2);
+        assertThat(boardResponseDtoList.get(0).getBoardId()).isEqualTo(2024L);
         resultActions.andExpect(status().isOk());
     }
 
@@ -71,14 +71,14 @@ public class BoardControllerTest {
                 .getResponse()
                 .getContentAsString();
         // 직렬화 수행
-        PostDetailResponseDto postDetailResponseDto = om.readValue(
+        BoardDetailResponseDto boardDetailResponseDto = om.readValue(
                 responseBody,
-                PostDetailResponseDto.class
+                BoardDetailResponseDto.class
         );
 
-        System.out.println("responseBody = "+postDetailResponseDto.toString());
+        System.out.println("responseBody = "+ boardDetailResponseDto.toString());
         // Then 결과 검증 - 상태코드 확인 , 게시판ID확인
-        assertThat(postDetailResponseDto.getBoardId()).isEqualTo(2025L);
+        assertThat(boardDetailResponseDto.getBoardId()).isEqualTo(2025L);
         resultActions.andExpect(status().isOk());
     }
 
@@ -86,11 +86,11 @@ public class BoardControllerTest {
     public void board_update_success_test() throws Exception {
         // Given 데이터 세팅
         Long boardId = 2024L;
-        PostRequestDto postRequestDto = new PostRequestDto();
-        postRequestDto.setTitle("게시물 제목");
-        postRequestDto.setContent("게시물 내용123123");
+        BoardRequestDto boardRequestDto = new BoardRequestDto();
+        boardRequestDto.setTitle("게시물 제목");
+        boardRequestDto.setContent("게시물 내용123123");
 
-        String requestBody = om.writeValueAsString(postRequestDto);
+        String requestBody = om.writeValueAsString(boardRequestDto);
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/boards/posts/{boardId}",boardId)
                 .content(requestBody)
@@ -109,11 +109,11 @@ public class BoardControllerTest {
     @Test
     public void board_create_success_test() throws Exception {
         // Given 데이터 세팅
-        PostRequestDto postRequestDto = new PostRequestDto();
-        postRequestDto.setTitle("게시물 제목11");
-        postRequestDto.setContent("게시물 내용1223");
+        BoardRequestDto boardRequestDto = new BoardRequestDto();
+        boardRequestDto.setTitle("게시물 제목11");
+        boardRequestDto.setContent("게시물 내용1223");
 
-        String requestBody = om.writeValueAsString(postRequestDto);
+        String requestBody = om.writeValueAsString(boardRequestDto);
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(post("/boards/posts")
                 .content(requestBody)

@@ -46,6 +46,9 @@ public class Users {
     @OneToMany(mappedBy = "user")
     private List<Likes> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Comments> comments = new ArrayList<>();
+
     public void addBoards(Boards board) {
         this.boards.add(board); // User → board 컬렉션 추가
         if (board.getUser() !=this){

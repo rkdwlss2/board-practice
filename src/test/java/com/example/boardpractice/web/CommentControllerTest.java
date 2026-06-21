@@ -1,8 +1,8 @@
 package com.example.boardpractice.web;
 
 import com.example.boardpractice.web.dto.comment.CommentDeleteRequestDto;
-import com.example.boardpractice.web.dto.comment.CommentRequestDto;
-import com.example.boardpractice.web.dto.comment.CommentResponseDto;
+import com.example.boardpractice.web.dto.comment.CommentCreateRequestDto;
+import com.example.boardpractice.web.dto.comment.CommentUpdateResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,9 +43,9 @@ public class CommentControllerTest {
                 .getResponse()
                 .getContentAsString();
         // 직렬화 수행
-        List<CommentResponseDto> commentResponseDtoList = om.readValue(
+        List<CommentUpdateResponseDto> commentResponseDtoList = om.readValue(
                 responseBody,
-                new TypeReference<List<CommentResponseDto>>() {
+                new TypeReference<List<CommentUpdateResponseDto>>() {
                 }
         );
 
@@ -59,10 +59,10 @@ public class CommentControllerTest {
     public void board_create_success_test() throws Exception {
         // Given 데이터 세팅
         Long boardId = 2024L;
-        CommentRequestDto commentRequestDto = new CommentRequestDto();
-        commentRequestDto.setContent("댓글 내용123123");
+        CommentCreateRequestDto commentCreateRequestDto = new CommentCreateRequestDto();
+        commentCreateRequestDto.setContent("댓글 내용123123");
 
-        String requestBody = om.writeValueAsString(commentRequestDto);
+        String requestBody = om.writeValueAsString(commentCreateRequestDto);
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(post("/boards/posts/{boardId}/comment",boardId)
                 .content(requestBody)
@@ -80,10 +80,10 @@ public class CommentControllerTest {
     public void board_update_success_test() throws Exception {
         // Given 데이터 세팅
         Long boardId = 2024L;
-        CommentRequestDto commentRequestDto = new CommentRequestDto();
-        commentRequestDto.setContent("댓글 내용123123");
+        CommentCreateRequestDto commentCreateRequestDto = new CommentCreateRequestDto();
+        commentCreateRequestDto.setContent("댓글 내용123123");
 
-        String requestBody = om.writeValueAsString(commentRequestDto);
+        String requestBody = om.writeValueAsString(commentCreateRequestDto);
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/boards/posts/{boardId}/comment",boardId)
                 .content(requestBody)

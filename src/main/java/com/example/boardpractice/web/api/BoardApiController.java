@@ -1,6 +1,5 @@
 package com.example.boardpractice.web.api;
 
-import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.*;
@@ -14,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class BoardApiController {
@@ -25,35 +22,35 @@ public class BoardApiController {
 
     @GetMapping("/boards/posts")
     public ResponseEntity<?> getPosts(@RequestParam int page, @RequestParam int size){
-        Page<PostResponseDto> postResponseDtoList= boardService.getAllPosts(page,size);
+        Page<BoardResponseDto> postResponseDtoList= boardService.getAllPosts(page,size);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
     @GetMapping("/boards/posts/{boardId}")
     public ResponseEntity<?> getDetailPost(@PathVariable Long boardId){
-        PostDetailResponseDto postDetailResponseDto = boardService.getPost(boardId);
-        return new ResponseEntity<>(postDetailResponseDto,HttpStatus.OK);
+        BoardDetailResponseDto boardDetailResponseDto = boardService.getPost(boardId);
+        return new ResponseEntity<>(boardDetailResponseDto,HttpStatus.OK);
     }
 
 
     @PostMapping("/boards/posts/{userId}")
-    public ResponseEntity<?> createDetailPost(@RequestBody PostRequestDto postRequestDto,@PathVariable Long userId){
-        String title = postRequestDto.getTitle();
-        String content = postRequestDto.getContent();
+    public ResponseEntity<?> createDetailPost(@RequestBody BoardRequestDto boardRequestDto, @PathVariable Long userId){
+        String title = boardRequestDto.getTitle();
+        String content = boardRequestDto.getContent();
         boardService.createPost(userId,title,content);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
-        String title = postRequestDto.getTitle();
-        String content = postRequestDto.getContent();
-        PostUpdateResponseDto postUpdateResponseDto = boardService.updatePost(boardId,title,content);
-        return new ResponseEntity<>(postUpdateResponseDto,HttpStatus.OK);
+    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody BoardRequestDto boardRequestDto){
+        String title = boardRequestDto.getTitle();
+        String content = boardRequestDto.getContent();
+        BoardUpdateResponseDto boardUpdateResponseDto = boardService.updatePost(boardId,title,content);
+        return new ResponseEntity<>(boardUpdateResponseDto,HttpStatus.OK);
     }
 
     @DeleteMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
+    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId, @RequestBody BoardRequestDto boardRequestDto){
         boardService.deletePost(boardId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

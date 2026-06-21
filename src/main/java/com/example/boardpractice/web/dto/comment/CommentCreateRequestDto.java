@@ -2,10 +2,10 @@ package com.example.boardpractice.web.dto.comment;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
-public class CommentDeleteRequestDto {
-    private Long commentId;
+public class CommentCreateRequestDto {
+    private String content;
+    private Long userId;
 }

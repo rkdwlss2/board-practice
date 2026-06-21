@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @SpringBootTest
 @Transactional
 class UsersTest {
@@ -17,16 +19,13 @@ class UsersTest {
     @Test
     @Rollback(false)
     void idTest(){
-        //Users users = new Users(null,"russellNickname","russell@gmail.com","1234","1234","2025-04-22 00:00:01","2025-04-22 00:00:01","2025-04-22 00:00:01","imageUrl.com/123123",UserRole.USER);
         Users users = Users.builder()
                 .userId(null)
                 .nickname("russell")
                 .email("russell@gmail.com")
                 .password("1234")
-                .createDate("2025-04-22 00:00:01")
-                .deleteDate("2025-04-22 00:00:01")
-                .updatedDate("2025-04-22 00:00:01")
-                .userImageUrl("imageUrl.com/123123")
+                .baseTimeEntity(new BaseTimeEntity(LocalDateTime.MAX,LocalDateTime.MAX,LocalDateTime.MAX))
+                .profileImageFile(new FileInfo("imagenUL","test"))
                 .build();
         entityManager.persist(users);
         entityManager.flush();

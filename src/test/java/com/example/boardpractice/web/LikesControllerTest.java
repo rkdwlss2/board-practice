@@ -1,6 +1,5 @@
 package com.example.boardpractice.web;
 
-import com.example.boardpractice.web.dto.comment.CommentRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

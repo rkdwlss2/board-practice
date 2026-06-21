@@ -12,9 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,12 +19,12 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public Page<PostResponseDto> getAllPosts(int page,int size){
+    public Page<BoardResponseDto> getAllPosts(int page, int size){
         Pageable pageable = PageRequest.of(page,size);
         return boardRepository.findAllWithCounts(pageable);
     }
 
-    public PostDetailResponseDto getPost(Long boardId){
+    public BoardDetailResponseDto getPost(Long boardId){
         return boardRepository.findByIdWithCounts(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾지 못했습니다."));
     }
 
@@ -36,17 +33,7 @@ public class BoardService {
     }
 
     @Transactional
-    public PostUpdateResponseDto updatePost(Long boardId, String title, String content) {
-        Boards board = findBoardById(boardId);
-        board.changeTitle(title);
-        board.changeContent(content);
-        return PostUpdateResponseDto.builder()
-                .boardId(board.getBoardId())
-                .build();
-    }
-
-    @Transactional
-    public PostCreateResponseDto createPost(Long userId, String title, String content) {
+    public BoardCreateResponseDto createPost(Long userId, String title, String content) {
         Users user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
         Boards requestBoard = Boards.builder()
                 .title(title)
@@ -54,8 +41,18 @@ public class BoardService {
                 .user(user)
                 .build();
         Boards responseBoard =boardRepository.save(requestBoard);
-        return  PostCreateResponseDto.builder()
+        return  BoardCreateResponseDto.builder()
                 .boardId(responseBoard.getBoardId())
+                .build();
+    }
+
+    @Transactional
+    public BoardUpdateResponseDto updatePost(Long boardId, String title, String content) {
+        Boards board = findBoardById(boardId);
+        board.changeTitle(title);
+        board.changeContent(content);
+        return BoardUpdateResponseDto.builder()
+                .boardId(board.getBoardId())
                 .build();
     }
 
