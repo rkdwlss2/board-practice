@@ -59,8 +59,10 @@ public class CommentControllerTest {
     public void board_create_success_test() throws Exception {
         // Given 데이터 세팅
         Long boardId = 2024L;
-        CommentCreateRequestDto commentCreateRequestDto = new CommentCreateRequestDto();
-        commentCreateRequestDto.setContent("댓글 내용123123");
+        CommentCreateRequestDto commentCreateRequestDto =
+                CommentCreateRequestDto.builder()
+                        .content("This is a comment")
+                        .build();
 
         String requestBody = om.writeValueAsString(commentCreateRequestDto);
         // When 테스트 동작 수행 - API 호출
@@ -80,9 +82,10 @@ public class CommentControllerTest {
     public void board_update_success_test() throws Exception {
         // Given 데이터 세팅
         Long boardId = 2024L;
-        CommentCreateRequestDto commentCreateRequestDto = new CommentCreateRequestDto();
-        commentCreateRequestDto.setContent("댓글 내용123123");
-
+        CommentCreateRequestDto commentCreateRequestDto =
+                CommentCreateRequestDto.builder()
+                        .content("This is a comment")
+                        .build();
         String requestBody = om.writeValueAsString(commentCreateRequestDto);
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/boards/posts/{boardId}/comment",boardId)
@@ -104,7 +107,6 @@ public class CommentControllerTest {
         Long boardId = 2024L;
 
         CommentDeleteRequestDto commentDeleteRequestDto = new CommentDeleteRequestDto();
-        commentDeleteRequestDto.setCommentId(2024L);
         String requestBody = om.writeValueAsString(commentDeleteRequestDto);
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/boards/posts/{boardId}/comment",boardId)
