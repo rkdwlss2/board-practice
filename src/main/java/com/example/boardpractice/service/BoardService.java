@@ -1,11 +1,17 @@
 package com.example.boardpractice.service;
 
 import com.example.boardpractice.entity.Boards;
+import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.repository.BoardRepository;
 import com.example.boardpractice.repository.UserRepository;
+import com.example.boardpractice.web.dto.Board.PostCreateResponseDto;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
+import com.example.boardpractice.web.dto.Board.PostUpdateResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -19,65 +25,40 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public List<PostResponseDto> getAllPosts(int page,int size){
-        List<PostResponseDto> postList = new ArrayList<>();
-        postList.add(
-                PostResponseDto.builder()
-                        .boardId(2024L)
-                        .title("제목1")
-                        .writer("더미작성자1")
-                        .likeCount(2L)
-                        .commentCount(3L)
-                        .viewCount(4L)
-                        .writeDate("2014-01-02 00:01:00")
-                        .createDate("2014-01-02 00:01:00")
-                        .updatedDate("2014-01-02 00:01:00")
-                .build()
-        );
-        postList.add(
-                PostResponseDto.builder()
-                        .boardId(2025L)
-                        .title("제목2")
-                        .writer("더미작성자2")
-                        .likeCount(4L)
-                        .commentCount(32L)
-                        .viewCount(43L)
-                        .writeDate("2014-01-02 00:01:00")
-                        .createDate("2014-01-02 00:01:00")
-                        .updatedDate("2014-01-02 00:01:00")
-                        .build()
-        );
-        return postList;
+    public Page<PostResponseDto> getAllPosts(int page,int size){
+        Pageable pageable = PageRequest.of(page,size);
+        return boardRepository.findAllWithCounts(pageable);
     }
 
     public PostDetailResponseDto getPost(Long boardId){
-        PostDetailResponseDto postDetailResponseDto = PostDetailResponseDto.builder()
-                .boardId(2025L)
-                .title("제목2")
-                .writer("더미작성자2")
-                .commentCount(32L)
-                .boardImageUrl("www.google.com/urltest")
-                .viewCount(43L)
-                .writeDate("2014-01-02 00:01:00")
-                .createDate("2014-01-02 00:01:00")
-                .updatedDate("2014-01-02 00:01:00")
+        return boardRepository.findByIdWithCounts(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾지 못했습니다."));
+    }
+
+    public Boards findBoardById(Long boardId){
+        return boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("게시글 찾지 못했습니다."));
+    }
+
+    @Transactional
+    public PostUpdateResponseDto updatePost(Long boardId, String title, String content) {
+        Boards board = findBoardById(boardId);
+        board.changeTitle(title);
+        board.changeContent(content);
+        return PostUpdateResponseDto.builder()
+                .boardId(board.getBoardId())
                 .build();
-        return postDetailResponseDto;
     }
 
     @Transactional
-    public void updatePost(Boards board) {
-//        Post dbPost = repository.get(post.getBoardId());
-//        if (dbPost==null){
-//           throw new RuntimeException("해당 글의 ID가 없습니다.");
-//        }
-//         repositroy.updatePost(); //구현필요
-    }
-
-    @Transactional
-    public void createPost(Boards board){
-        // Long newId = idGenerator.getAndIncrement();
-        //
-        // repositroy.createPost(newId); 구현필요
+    public PostCreateResponseDto createPost(Long userId, String title, String content) {
+        Users user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
+        Boards requestBoard = Boards.builder()
+                .title(title)
+                .content(content)
+                .user(user)
+                .build();
+        Boards responseBoard =boardRepository.save(requestBoard);
+        return  PostCreateResponseDto.builder()
+                .boardId(responseBoard.getBoardId())
+                .build();
     }
 }

@@ -18,6 +18,9 @@ public class Comments {
     private Long userId;
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Boards board;
+
     @Embedded
     private BaseTimeEntity baseTimeEntity;
 }

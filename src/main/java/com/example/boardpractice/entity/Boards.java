@@ -40,11 +40,27 @@ public class Boards {
     @JoinColumn(name = "board")
     private List<Likes> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board")
+    private List<Comments> comments = new ArrayList<>();
+
     // 연관관계 편의 메서드
     public void assignUser(Users user){
         this.user = user;
         if (!user.getBoards().contains(this)){
             user.addBoards(this);
+        }
+    }
+
+    //
+    public void changeTitle(String title){
+        if (title != null) {
+            this.title = title;
+        }
+    }
+
+    public void changeContent(String content) {
+        if (content != null) {
+            this.content = content;
         }
     }
 }

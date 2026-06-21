@@ -6,9 +6,11 @@ import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
 import com.example.boardpractice.web.dto.Board.PostRequestDto;
+import com.example.boardpractice.web.dto.Board.PostUpdateResponseDto;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ public class BoardApiController {
 
     @GetMapping("/boards/posts")
     public ResponseEntity<?> getPosts(@RequestParam int page, @RequestParam int size){
-        List<PostResponseDto> postResponseDtoList= boardService.getAllPosts(page,size);
+        Page<PostResponseDto> postResponseDtoList= boardService.getAllPosts(page,size);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
@@ -36,26 +38,22 @@ public class BoardApiController {
         return new ResponseEntity<>(postDetailResponseDto,HttpStatus.OK);
     }
 
-    @PutMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
-        Boards board = Boards.builder()
-                .boardId(boardId)
-                .title(postRequestDto.getTitle())
-                .content(postRequestDto.getContent())
-                .build();
 
-        boardService.updatePost(board);
+    @PostMapping("/boards/posts/{userId}")
+    public ResponseEntity<?> createDetailPost(@RequestBody PostRequestDto postRequestDto,@PathVariable Long userId){
+        String title = postRequestDto.getTitle();
+        String content = postRequestDto.getContent();
+        boardService.createPost(userId,title,content);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/boards/posts")
-    public ResponseEntity<?> createDetailPost(@RequestBody PostRequestDto postRequestDto){
-        Boards board = Boards.builder()
-                .title(postRequestDto.getTitle())
-                .content(postRequestDto.getContent())
-                .build();
-        boardService.createPost(board);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+    @PutMapping("/boards/posts/{boardId}")
+    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
+        String title = postRequestDto.getTitle();
+        String content = postRequestDto.getContent();
+        PostUpdateResponseDto postUpdateResponseDto = boardService.updatePost(boardId,title,content);
+        return new ResponseEntity<>(postUpdateResponseDto,HttpStatus.OK);
     }
 
     @PostMapping(value = "/boards/posts/{boardId}/image",

@@ -2,8 +2,9 @@ package com.example.boardpractice.web.dto.Board;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +15,7 @@ public class PostResponseDto {
     private Long likeCount;
     private Long commentCount;
     private Long viewCount;
-    private String writeDate;
-    private String createDate;
-    private String updatedDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updatedDate;
+    private LocalDateTime deleteDate;
 }

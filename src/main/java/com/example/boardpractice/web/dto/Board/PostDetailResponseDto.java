@@ -2,20 +2,22 @@ package com.example.boardpractice.web.dto.Board;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class PostDetailResponseDto {
     private Long boardId;
     private String title;
     private String writer;
+    private Long likeCount;
     private Long commentCount;
-    private String boardImageUrl;
     private Long viewCount;
-    private String writeDate;
-    private String createDate;
-    private String updatedDate;
+    private String boardImageUrl;
+    private String content;
+    private LocalDateTime writeDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updatedDate;
 }
