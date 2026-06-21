@@ -24,52 +24,45 @@ public class UserApiController {
 
     @PostMapping("/users/signup")
     public ResponseEntity<?> createUser(@RequestBody @Valid UserSignupRequestDto userRequestDto){
-        Users users = Users.builder()
-                .email(userRequestDto.getEmail())
-                .nickname(userRequestDto.getNickname())
-                .password(userRequestDto.getPassword())
-                .build();
-        Users responseUsers = userService.saveUser(users);
+
+        String email = userRequestDto.getEmail();
+        String nickname = userRequestDto.getNickname();
+        String password = userRequestDto.getPassword();
+        Users responseUsers = userService.registerUser(email,nickname,password);
         return new ResponseEntity<>(new UserResponseDto(responseUsers), HttpStatus.CREATED);
     }
 
-    @PutMapping("/users/me")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto, HttpSession session)
+    @PutMapping("/users/me/{userId}")
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,@PathVariable Long userId)
     {
-        String email = (String) session.getAttribute("LOGIN_USER");
-        Users responseUsers = userService.updateUserNickname(userUpdateRequestDto.getNickname(),email);
+        Users responseUsers = userService.updateUserNickname(userId,userUpdateRequestDto.getNickname());
 
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/me")
-    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto){
-        userService.deleteUser(userDeleteRequestDto.getEmail());
+    @DeleteMapping("/users/me/{userId}")
+    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,@PathVariable Long userId){
+        String  email = userDeleteRequestDto.getEmail();
+        userService.deleteUser(userId,email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @PutMapping("/users/me/password")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto, HttpSession session)
+    @PutMapping("/users/me/{userId}/password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,@PathVariable Long userId)
     {
-        Users users = Users.builder()
-                .password(passwordUpdateRequestDto.getPassword())
-                .confirmPassword(passwordUpdateRequestDto.getConfirmPassword())
-                .build();
-        String email = (String) session.getAttribute("LOGIN_USER");
-        users.updateEmailUser(email);
-        Users responseUsers = userService.updateUserPassword(users);
+        String password = passwordUpdateRequestDto.getPassword();
+        String confirmPassword = passwordUpdateRequestDto.getConfirmPassword();
+        Users responseUsers = userService.updateUserPassword(userId,password,confirmPassword);
 
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
     @PostMapping("/users/login")
     public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto){
-        Users users = Users.builder()
-                .email(userLoginRequestDto.getEmail())
-                .password(userLoginRequestDto.getPassword())
-                .build();
-        Users responseUsers = userService.loginUser(users);
+        String email = userLoginRequestDto.getEmail();
+        String password = userLoginRequestDto.getPassword();
+        Users responseUsers = userService.loginUser(email,password);
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 

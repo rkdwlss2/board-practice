@@ -2,60 +2,60 @@ package com.example.boardpractice.service;
 
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.exception.NotFoundException;
+import com.example.boardpractice.repository.BoardRepository;
+import com.example.boardpractice.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static aQute.bnd.annotation.headers.Category.database;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
-    private final Map<String, Users> database = new HashMap<>();
+    private final UserRepository userRepository;
 
-    public Users saveUser(Users users){
-
-        if (!database.containsKey(users.getEmail())){
-            database.put(users.getEmail(),
-                    Users.builder()
-                            .email(users.getPassword())
-                            .build());
-        }
-        return new Users(1L);
+    @Transactional
+    public Users registerUser(String email, String nickname, String password) {
+        Users users = Users.builder()
+                .email(email)
+                .nickname(nickname)
+                .password(password)
+                .build();
+        return userRepository.save(users);
     }
 
-    public Users updateUserNickname(String nickname, String email){
-        Users users = database.get(email);
-        if (users == null){
-            throw new NotFoundException("사용자를 찾을수 없습니다.");
-        }
+    public Users findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(()-> new NotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public Users updateUserNickname(Long userId,String nickname) {
+        Users users = findById(userId);
         users.makeUserNickname(nickname);
         return users;
     }
-
-    public Users updateUserPassword(Users users){
-        Users usersReq = database.get(users.getEmail());
-        if (users ==null){
-            throw new NotFoundException("사용자를 찾을수 없습니다.");
-        }
-
-        if (!users.getPassword().equals(users.getConfirmPassword())){
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-        }
-
-        users.checkPasswordConfirm(users.getConfirmPassword());
-        return usersReq;
+    @Transactional
+    public Users updateUserPassword(Long userId, String password, String confirmPassword) {
+        Users users = findById(userId);
+        users.checkPasswordConfirm(password, confirmPassword);
+        return users;
+    }
+    @Transactional
+    public void deleteUser(Long userId, String email){
+        Users users = findById(userId);
+        userRepository.delete(users);
     }
 
-    public void deleteUser(String email){
-        Map<String, String> database = new HashMap<>();
-    }
+    public Users loginUser(String email, String loginPassword) {
+        Users usersReq = userRepository.findByEmail(email).orElseThrow(()->new NotFoundException("이메일이 일치하지 않습니다.")); //만약 일치하면 영속성 컨텍스트에 비밀번호 존재
 
-    public Users loginUser(Users users){
-        Users usersReq = database.get(users.getEmail());
-        String storedPassword = usersReq.getPassword();
-
-        if (storedPassword == null || !storedPassword.equals(users.getPassword())) {
-            throw new NotFoundException("이메일 또는 비밀번호가 올바르지 않습니다.");
-        }
+        usersReq.checkPassword(loginPassword); // 영속성 컨텍스트에 있는 비밀번호와 지금 로그인하려는 비밀번호를 체크한다.
 
         return usersReq;
     }

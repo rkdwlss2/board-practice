@@ -2,6 +2,8 @@ package com.example.boardpractice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@SQLDelete(sql = "UPDATE users SET delete_date = CURRENT_TIMESTAMP WHERE user_id = ?")
+@SQLRestriction("delete_date IS NULL")
 public class Users {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -22,16 +26,25 @@ public class Users {
     private String password;
     @Transient
     private String confirmPassword;
-    private String deleteDate;
-    private String createDate;
-    private String updatedDate;
-    private String userImageUrl;
+
+    @Embedded
+    private BaseTimeEntity baseTimeEntity;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "imageUrl",column = @Column(name = "profile_image_url")),
+            @AttributeOverride(name = "introduction",column = @Column(name = "profile_introduction"))
+    })
+    private FileInfo profileImageFile;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     @OneToMany(mappedBy = "user")
     private List<Boards> boards = new ArrayList<>();;
+
+    @OneToMany(mappedBy = "user")
+    private List<Likes> likes = new ArrayList<>();
 
     public void addBoards(Boards board) {
         this.boards.add(board); // User → board 컬렉션 추가
@@ -48,8 +61,17 @@ public class Users {
         this.nickname = nickname;
     }
 
-    public void checkPasswordConfirm(String confirmPassword){
-        this.confirmPassword= confirmPassword;
+    public void checkPasswordConfirm(String newPassword, String confirmPassword){
+        if (!newPassword.equals(confirmPassword)){ // 비밀번호 일치 불일치 로직
+            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+        this.password=newPassword;
+    }
+
+    public void checkPassword(String loginPassword){
+        if (!loginPassword.equals(this.password)){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
     }
 
     public void updateEmailUser(String email){

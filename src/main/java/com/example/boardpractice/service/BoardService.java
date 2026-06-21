@@ -1,8 +1,11 @@
 package com.example.boardpractice.service;
 
 import com.example.boardpractice.entity.Boards;
+import com.example.boardpractice.repository.BoardRepository;
+import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.PostResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BoardService {
-    @Transactional(readOnly = true)
+    private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
+
     public List<PostResponseDto> getAllPosts(int page,int size){
         List<PostResponseDto> postList = new ArrayList<>();
         postList.add(
@@ -43,7 +50,6 @@ public class BoardService {
         return postList;
     }
 
-    @Transactional(readOnly = true)
     public PostDetailResponseDto getPost(Long boardId){
         PostDetailResponseDto postDetailResponseDto = PostDetailResponseDto.builder()
                 .boardId(2025L)
@@ -59,6 +65,7 @@ public class BoardService {
         return postDetailResponseDto;
     }
 
+    @Transactional
     public void updatePost(Boards board) {
 //        Post dbPost = repository.get(post.getBoardId());
 //        if (dbPost==null){
@@ -67,6 +74,7 @@ public class BoardService {
 //         repositroy.updatePost(); //구현필요
     }
 
+    @Transactional
     public void createPost(Boards board){
         // Long newId = idGenerator.getAndIncrement();
         //
