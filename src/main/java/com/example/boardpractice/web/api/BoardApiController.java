@@ -3,10 +3,7 @@ package com.example.boardpractice.web.api;
 import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
-import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
-import com.example.boardpractice.web.dto.Board.PostResponseDto;
-import com.example.boardpractice.web.dto.Board.PostRequestDto;
-import com.example.boardpractice.web.dto.Board.PostUpdateResponseDto;
+import com.example.boardpractice.web.dto.Board.*;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -47,13 +44,18 @@ public class BoardApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @PutMapping("/boards/posts/{boardId}")
     public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
         String title = postRequestDto.getTitle();
         String content = postRequestDto.getContent();
         PostUpdateResponseDto postUpdateResponseDto = boardService.updatePost(boardId,title,content);
         return new ResponseEntity<>(postUpdateResponseDto,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/boards/posts/{boardId}")
+    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId, @RequestBody PostRequestDto postRequestDto){
+        boardService.deletePost(boardId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/boards/posts/{boardId}/image",

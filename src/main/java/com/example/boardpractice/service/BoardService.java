@@ -4,10 +4,7 @@ import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.repository.BoardRepository;
 import com.example.boardpractice.repository.UserRepository;
-import com.example.boardpractice.web.dto.Board.PostCreateResponseDto;
-import com.example.boardpractice.web.dto.Board.PostDetailResponseDto;
-import com.example.boardpractice.web.dto.Board.PostResponseDto;
-import com.example.boardpractice.web.dto.Board.PostUpdateResponseDto;
+import com.example.boardpractice.web.dto.Board.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,5 +57,11 @@ public class BoardService {
         return  PostCreateResponseDto.builder()
                 .boardId(responseBoard.getBoardId())
                 .build();
+    }
+
+    @Transactional
+    public void deletePost(Long boardId) {
+        Boards board = findBoardById(boardId);
+        boardRepository.deleteById(board.getBoardId());
     }
 }
