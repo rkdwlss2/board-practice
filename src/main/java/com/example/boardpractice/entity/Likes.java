@@ -11,16 +11,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "likes", uniqueConstraints = {
+        @UniqueConstraint(
+                name = "likes_unique",
+                columnNames = {"user_id", "board_id"}
+        )
+})
 public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "board_id",nullable = false)
     private Boards board;
 
     @Embedded
