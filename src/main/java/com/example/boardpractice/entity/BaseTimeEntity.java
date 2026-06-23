@@ -5,6 +5,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.time.LocalDateTime;
 
@@ -13,7 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class BaseTimeEntity {
-    private LocalDateTime deleteDate;
+    @CreationTimestamp
     private LocalDateTime createDate;
+    @UpdateTimestamp
     private LocalDateTime updatedDate;
+    private LocalDateTime deleteDate;
 }
