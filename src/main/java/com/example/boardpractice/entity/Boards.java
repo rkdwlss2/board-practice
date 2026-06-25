@@ -37,7 +37,7 @@ public class Boards {
     private Users user;
 
     @OneToMany
-    @JoinColumn(name = "board")
+    @JoinColumn(name = "board_id")
     private List<Likes> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "board")
