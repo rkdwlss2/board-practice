@@ -29,11 +29,11 @@ public class CommentService {
 
         List<CommentUpdateResponseDto> commentResponseDtoList = new ArrayList<>();
         for (Comments comments : commentList){
-            CommentUpdateResponseDto.builder()
+            commentResponseDtoList.add(CommentUpdateResponseDto.builder()
                     .commentId(comments.getCommentId())
                     .content(comments.getContent())
                     .writer(comments.getUser().getNickname())
-                    .build();
+                    .build());
         }
         return commentResponseDtoList;
     }

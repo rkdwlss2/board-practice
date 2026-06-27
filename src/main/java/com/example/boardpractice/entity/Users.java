@@ -9,11 +9,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE users SET delete_date = CURRENT_TIMESTAMP WHERE user_id = ?")
 @SQLRestriction("delete_date IS NULL")
 public class Users {
@@ -27,9 +28,9 @@ public class Users {
     private String password;
     @Transient
     private String confirmPassword;
-
+    @Builder.Default
     @Embedded
-    private BaseTimeEntity baseTimeEntity;
+    BaseTimeEntity baseTimeEntity = new BaseTimeEntity();
 
     @Embedded
     @AttributeOverrides({

@@ -32,7 +32,7 @@ public class CommentControllerTest {
     @Test
     public void commentList_get_success_test() throws Exception {
         // Given 데이터 세팅
-        Long boardId = 2024L;
+        Long boardId = 1L;
 
 
 
@@ -52,7 +52,7 @@ public class CommentControllerTest {
         System.out.println("responseBody = "+responseBody);
         // Then 결과 검증 - 상태코드 확인
         assertThat(commentResponseDtoList).hasSize(2);
-        assertThat(commentResponseDtoList.get(0).getCommentId()).isEqualTo(2026L);
+        assertThat(commentResponseDtoList.get(0).getCommentId()).isEqualTo(1L);
         resultActions.andExpect(status().isOk());
     }
     @Test

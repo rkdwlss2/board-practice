@@ -24,7 +24,7 @@ public class CustomExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY); // 422 상태코드
     }
 
     @ExceptionHandler(FileUploadException.class)
@@ -32,10 +32,24 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler(ClassNotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String,String>> handleNotFoundException(NotFoundException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("message", ex.getMessage()); // 에러 메시지를 담아 반환
         return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND); // 404 상태코드
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String,String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", ex.getMessage());
+        return  new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String,String>> handleAllException(Exception ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", ex.getMessage());
+        return  new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
