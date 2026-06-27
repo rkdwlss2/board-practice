@@ -4,9 +4,11 @@ import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.*;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,8 @@ public class BoardApiController {
     private final BoardService boardService;
 
     @GetMapping("/boards/posts")
-    public ResponseEntity<?> getPosts(@RequestParam int page, @RequestParam int size){
-        Page<BoardResponseDto> postResponseDtoList= boardService.getAllPosts(page,size);
+    public ResponseEntity<?> getPosts(Pageable pageable){
+        Page<BoardResponseDto> postResponseDtoList= boardService.getAllPosts(pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
@@ -34,7 +36,7 @@ public class BoardApiController {
 
 
     @PostMapping("/boards/posts/{userId}")
-    public ResponseEntity<?> createDetailPost(@RequestBody BoardRequestDto boardRequestDto, @PathVariable Long userId){
+    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @PathVariable Long userId){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
         boardService.createPost(userId,title,content);

@@ -2,6 +2,7 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.service.CommentService;
 import com.example.boardpractice.web.dto.comment.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class CommentApiController {
     }
 
     @PostMapping("/boards/posts/{boardId}/comment")
-    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody CommentCreateRequestDto commentCreateRequestDto){
+    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto){
         String content = commentCreateRequestDto.getContent();
         Long userId = commentCreateRequestDto.getUserId();
         CommentCreateResponseDto commentCreateResponseDto =commentService.createComment(boardId,userId,content);

@@ -19,8 +19,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public Page<BoardResponseDto> getAllPosts(int page, int size){
-        Pageable pageable = PageRequest.of(page,size);
+    public Page<BoardResponseDto> getAllPosts(Pageable pageable){
         return boardRepository.findAllWithCounts(pageable);
     }
 
