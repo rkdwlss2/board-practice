@@ -1,8 +1,11 @@
 package com.example.boardpractice.web.api;
 
+import com.example.boardpractice.common.utill.LoginRequired;
+import com.example.boardpractice.common.utill.LoginUser;
 import com.example.boardpractice.service.BoardlikeService;
 import com.example.boardpractice.web.dto.like.LikeCreateRequestDto;
 import com.example.boardpractice.web.dto.like.LikeDeleteRequestDto;
+import com.example.boardpractice.web.dto.user.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +18,17 @@ public class LikeApiController {
     private final BoardlikeService boardlikeService;
 
     @PostMapping("/boards/likes/{boardId}")
-    public ResponseEntity<?> increaseLikes(@PathVariable Long boardId,@RequestBody LikeCreateRequestDto likeCreateRequestDto) {
-        Long userId = likeCreateRequestDto.getUserId();
+    @LoginRequired
+    public ResponseEntity<?> increaseLikes(@PathVariable Long boardId, @LoginUser SessionUser loginUser) {
+        Long userId = loginUser.getUserId();
         boardlikeService.increaseLikes(boardId,userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/boards/likes/{boardId}")
-    public ResponseEntity<?> decreaseLikes(@PathVariable Long boardId,@RequestBody LikeDeleteRequestDto likeDeleteRequestDto) {
-        Long userId = likeDeleteRequestDto.getUserId();
+    @LoginRequired
+    public ResponseEntity<?> decreaseLikes(@PathVariable Long boardId, @LoginUser SessionUser loginUser) {
+        Long userId = loginUser.getUserId();
         boardlikeService.decreaseLikes(boardId,userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

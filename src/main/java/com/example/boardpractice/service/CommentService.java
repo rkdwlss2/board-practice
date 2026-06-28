@@ -33,6 +33,8 @@ public class CommentService {
                     .commentId(comments.getCommentId())
                     .content(comments.getContent())
                     .writer(comments.getUser().getNickname())
+                    .updatedDate(comments.getBaseTimeEntity().getUpdatedDate())
+                    .createDate(comments.getBaseTimeEntity().getCreateDate())
                     .build());
         }
         return commentResponseDtoList;
@@ -69,6 +71,7 @@ public class CommentService {
     public CommentUpdateResponseDto updateComment( Long commentId,  String content){
         Comments comment = findCommentById(commentId);
         comment.changeContent(content);
+
         return CommentUpdateResponseDto.builder()
                 .commentId(commentId)
                 .build();

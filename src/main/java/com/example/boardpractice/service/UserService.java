@@ -22,6 +22,9 @@ public class UserService {
 
     @Transactional
     public Users registerUser(String email, String nickname, String password) {
+        if(userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일 입니다.");
+        }
         Users users = Users.builder()
                 .email(email)
                 .nickname(nickname)

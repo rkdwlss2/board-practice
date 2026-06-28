@@ -1,14 +1,18 @@
 package com.example.boardpractice.web.api;
 
+import com.example.boardpractice.common.utill.LoginRequired;
+import com.example.boardpractice.common.utill.LoginUser;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.*;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
+import com.example.boardpractice.web.dto.user.SessionUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +27,7 @@ public class BoardApiController {
     private final BoardService boardService;
 
     @GetMapping("/boards/posts")
-    public ResponseEntity<?> getPosts(Pageable pageable){
+    public ResponseEntity<?> getPosts(@PageableDefault(page = 0, size = 10) Pageable pageable){
         Page<BoardResponseDto> postResponseDtoList= boardService.getAllPosts(pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
@@ -35,11 +39,12 @@ public class BoardApiController {
     }
 
 
-    @PostMapping("/boards/posts/{userId}")
-    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @PathVariable Long userId){
+    @PostMapping("/boards/posts")
+    @LoginRequired
+    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @LoginUser SessionUser loginUser){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
-        boardService.createPost(userId,title,content);
+        boardService.createPost(loginUser.getUserId(), title,content);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -52,7 +57,7 @@ public class BoardApiController {
     }
 
     @DeleteMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId, @RequestBody BoardRequestDto boardRequestDto){
+    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId){
         boardService.deletePost(boardId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

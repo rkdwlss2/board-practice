@@ -7,11 +7,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE comments SET delete_date = CURRENT_TIMESTAMP WHERE comment_id = ?")
 @SQLRestriction("delete_date IS NULL")
 @Entity
@@ -26,8 +28,9 @@ public class Comments {
     @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
+    @Builder.Default
     @Embedded
-    private BaseTimeEntity baseTimeEntity;
+    BaseTimeEntity baseTimeEntity = new BaseTimeEntity();
 
     public void changeContent(String content) {
         if (content != null) {

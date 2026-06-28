@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE boards SET delete_date = CURRENT_TIMESTAMP WHERE board_id = ?")
 @SQLRestriction("delete_date IS NULL")
 @Entity
@@ -25,10 +27,13 @@ public class Boards {
     private String content;
     private Long likeCount;
     private Long commentCount;
-    private Long viewCount;
+    @Builder.Default
+    @Column(nullable = false)
+    private Long viewCount = 0L;
 
+    @Builder.Default
     @Embedded
-    private BaseTimeEntity baseTimeEntity;
+    BaseTimeEntity baseTimeEntity = new BaseTimeEntity();
 
     private String boardImageUrl;
 

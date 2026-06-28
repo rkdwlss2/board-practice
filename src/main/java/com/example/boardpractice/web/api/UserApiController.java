@@ -1,10 +1,13 @@
 package com.example.boardpractice.web.api;
 
+import com.example.boardpractice.common.utill.LoginRequired;
+import com.example.boardpractice.common.utill.LoginUser;
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.service.UserService;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
 import com.example.boardpractice.web.dto.user.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,38 +35,52 @@ public class UserApiController {
         return new ResponseEntity<>(new UserResponseDto(responseUsers), HttpStatus.CREATED);
     }
 
-    @PutMapping("/users/me/{userId}")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,@PathVariable Long userId)
+    @PutMapping("/users/me")
+    @LoginRequired
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,@LoginUser SessionUser loginUser)
     {
-        Users responseUsers = userService.updateUserNickname(userId,userUpdateRequestDto.getNickname());
+        Users responseUsers = userService.updateUserNickname(loginUser.getUserId(),userUpdateRequestDto.getNickname());
 
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/me/{userId}")
-    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,@PathVariable Long userId){
+    @DeleteMapping("/users/me")
+    @LoginRequired
+    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,@LoginUser SessionUser loginUser){
         String  email = userDeleteRequestDto.getEmail();
-        userService.deleteUser(userId,email);
+        userService.deleteUser(loginUser.getUserId(),email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @PutMapping("/users/me/{userId}/password")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,@PathVariable Long userId)
+    @PutMapping("/users/me/password")
+    @LoginRequired
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,@LoginUser SessionUser loginUser)
     {
         String password = passwordUpdateRequestDto.getPassword();
         String confirmPassword = passwordUpdateRequestDto.getConfirmPassword();
-        Users responseUsers = userService.updateUserPassword(userId,password,confirmPassword);
+        Users responseUsers = userService.updateUserPassword(loginUser.getUserId(),password,confirmPassword);
 
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto){
+    public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request){
         String email = userLoginRequestDto.getEmail();
         String password = userLoginRequestDto.getPassword();
         Users responseUsers = userService.loginUser(email,password);
+
+        HttpSession session = request.getSession();
+        //System.out.println("로그인 시 세션 ID: " + session.getId());
+        session.setAttribute("loginUser",new SessionUser(responseUsers));
+
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
+    }
+
+    @GetMapping("/user/me")
+    @LoginRequired
+    public ResponseEntity<?> getUserInfo(@LoginUser SessionUser loginUser) {
+        return ResponseEntity.ok(loginUser);
     }
 
     @PostMapping(value = "/users/me/image",

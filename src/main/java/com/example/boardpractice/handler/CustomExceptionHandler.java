@@ -52,4 +52,9 @@ public class CustomExceptionHandler {
         errors.put("message", ex.getMessage());
         return  new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
+        return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+    }
 }

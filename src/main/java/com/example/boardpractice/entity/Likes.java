@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @Entity
 @Table(name = "likes", uniqueConstraints = {
@@ -29,6 +31,7 @@ public class Likes {
     @JoinColumn(name = "board_id",nullable = false)
     private Boards board;
 
+    @Builder.Default
     @Embedded
-    private BaseTimeEntity baseTimeEntity;
+    BaseTimeEntity baseTimeEntity = new BaseTimeEntity();
 }

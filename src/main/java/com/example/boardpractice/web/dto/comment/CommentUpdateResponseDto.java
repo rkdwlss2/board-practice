@@ -2,6 +2,8 @@ package com.example.boardpractice.web.dto.comment;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -10,7 +12,7 @@ public class CommentUpdateResponseDto {
     private Long commentId;
     private String writer;
     private String content;
-    private String writeDate;
-    private String createDate;
-    private String updatedDate;
+    private LocalDateTime writeDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updatedDate;
 }

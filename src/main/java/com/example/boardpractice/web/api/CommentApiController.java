@@ -1,7 +1,10 @@
 package com.example.boardpractice.web.api;
 
+import com.example.boardpractice.common.utill.LoginRequired;
+import com.example.boardpractice.common.utill.LoginUser;
 import com.example.boardpractice.service.CommentService;
 import com.example.boardpractice.web.dto.comment.*;
+import com.example.boardpractice.web.dto.user.SessionUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,9 +26,10 @@ public class CommentApiController {
     }
 
     @PostMapping("/boards/posts/{boardId}/comment")
-    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto){
+    @LoginRequired
+    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto, @LoginUser SessionUser loginUser){
         String content = commentCreateRequestDto.getContent();
-        Long userId = commentCreateRequestDto.getUserId();
+        Long userId = loginUser.getUserId();
         CommentCreateResponseDto commentCreateResponseDto =commentService.createComment(boardId,userId,content);
         return new ResponseEntity<>(commentCreateResponseDto,HttpStatus.OK);
     }
@@ -38,8 +42,8 @@ public class CommentApiController {
     }
 
     @DeleteMapping("/boards/posts/comment/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId,@RequestBody CommentDeleteRequestDto commentDeleteRequestDto){
-        commentService.deleteComment(commentDeleteRequestDto.getCommentId());
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId){
+        commentService.deleteComment(commentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
