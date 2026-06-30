@@ -2,6 +2,7 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.common.utill.LoginRequired;
 import com.example.boardpractice.common.utill.LoginUser;
+import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.*;
@@ -16,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,11 +42,11 @@ public class BoardApiController {
 
 
     @PostMapping("/boards/posts")
-    @LoginRequired
-    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @LoginUser SessionUser loginUser){
+//    @LoginRequired
+    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @AuthenticationPrincipal Users user){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
-        boardService.createPost(loginUser.getUserId(), title,content);
+        boardService.createPost(user.getUserId(), title,content);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
