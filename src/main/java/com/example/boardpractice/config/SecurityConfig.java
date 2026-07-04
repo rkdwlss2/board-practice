@@ -23,12 +23,13 @@ public class SecurityConfig {
                 .httpBasic(basic->basic.disable())
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users/signup", "/users/login","/boards/posts","/boards/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/signup", "/users/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/boards/posts/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/boards/**").authenticated()
                         .requestMatchers("/users/me/**", "/user/me").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/boards/posts").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT,"/users/me").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

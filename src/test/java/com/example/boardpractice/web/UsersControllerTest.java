@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.ObjectMapper;
 
@@ -23,6 +25,33 @@ public class UsersControllerTest {
 
     @Autowired
     private ObjectMapper om;
+    @Autowired
+    private MockMvc mockMvc;
+
+    private MockHttpSession login() throws Exception{
+        UserSignupRequestDto userSignupRequestDto = new UserSignupRequestDto();
+        userSignupRequestDto.setEmail("russell@gmail.com");
+        userSignupRequestDto.setPassword("Asdf!12345");
+        userSignupRequestDto.setNickname("russell");
+        // 회원가입
+        mockMvc.perform(post("/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsBytes(userSignupRequestDto)))
+                .andExpect(status().isCreated());
+
+
+        UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
+        userLoginRequestDto.setEmail("russell@gmail.com");
+        userLoginRequestDto.setPassword("Asdf!12345");
+
+        // 로그인
+        MvcResult result = mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsBytes(userLoginRequestDto)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return (MockHttpSession) result.getRequest().getSession(true);
+    }
 
     @Test
     public void create_success_test() throws Exception {
@@ -151,6 +180,7 @@ public class UsersControllerTest {
     // 닉네임 공백 테스트
     @Test
     public void update_nickname_blank_fail_test() throws Exception {
+        MockHttpSession session = login();
         // Given 데이터 세팅
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
         userUpdateRequestDto.setNickname("");
@@ -160,6 +190,7 @@ public class UsersControllerTest {
 
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/users/me")
+                .session(session)
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -175,6 +206,7 @@ public class UsersControllerTest {
     // 닉네임 띄어쓰기 테스트
     @Test
     public void update_nickname_space_fail_test() throws Exception {
+        MockHttpSession session = login();
         // Given 데이터 세팅
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
         userUpdateRequestDto.setNickname("e e");
@@ -184,6 +216,7 @@ public class UsersControllerTest {
 
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/users/me")
+                .session(session)
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -199,6 +232,7 @@ public class UsersControllerTest {
     // 닉네임 1~10 자리 테스트
     @Test
     public void update_nickname_size_fail_test() throws Exception {
+        MockHttpSession session = login();
         // Given 데이터 세팅
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
         userUpdateRequestDto.setNickname("12345678910");
@@ -208,6 +242,7 @@ public class UsersControllerTest {
 
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(put("/users/me")
+                .session(session)
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -224,6 +259,7 @@ public class UsersControllerTest {
     // 회원 탈퇴 테스트
     @Test
     public void delete_user_success_test() throws Exception {
+        MockHttpSession session = login();
         // Given 데이터 세팅
         UserDeleteRequestDto userDeleteRequestDto = new UserDeleteRequestDto();
         userDeleteRequestDto.setEmail("russell@gmail.com");
@@ -233,6 +269,7 @@ public class UsersControllerTest {
 
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(delete("/users/me")
+                .session(session)
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -249,6 +286,7 @@ public class UsersControllerTest {
     // 회원 탈퇴 이메일 오류 테스트
     @Test
     public void delete_user_faill_test() throws Exception {
+        MockHttpSession session = login();
         // Given 데이터 세팅
         UserDeleteRequestDto userDeleteRequestDto = new UserDeleteRequestDto();
         userDeleteRequestDto.setEmail("@gmail.com");
@@ -258,6 +296,7 @@ public class UsersControllerTest {
 
         // When 테스트 동작 수행 - API 호출
         ResultActions resultActions = mvc.perform(delete("/users/me")
+                .session(session)
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -273,6 +312,15 @@ public class UsersControllerTest {
     // 유저 로그인 테스트
     @Test
     public void login_success_test() throws Exception {
+        UserSignupRequestDto userSignupRequestDto = new UserSignupRequestDto();
+        userSignupRequestDto.setEmail("russell@gmail.com");
+        userSignupRequestDto.setPassword("Asdf!12345");
+        userSignupRequestDto.setNickname("russell");
+        // 회원가입
+        mockMvc.perform(post("/users/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsBytes(userSignupRequestDto)));
+
         // Given 데이터 세팅
         UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
         userLoginRequestDto.setEmail("russell@gmail.com");
