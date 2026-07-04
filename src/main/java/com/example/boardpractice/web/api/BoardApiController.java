@@ -35,15 +35,16 @@ public class BoardApiController {
     }
 
     @GetMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> getDetailPost(@PathVariable Long boardId){
-        BoardDetailResponseDto boardDetailResponseDto = boardService.getPost(boardId);
+    public ResponseEntity<?> getDetailPost(@PathVariable Long boardId,@AuthenticationPrincipal SessionUser sessionUser){
+        String currentUserNickname = (sessionUser==null)?null:sessionUser.getNickname();
+        BoardDetailResponseDto boardDetailResponseDto = boardService.getPost(boardId,currentUserNickname);
         return new ResponseEntity<>(boardDetailResponseDto,HttpStatus.OK);
     }
 
 
     @PostMapping("/boards/posts")
 //    @LoginRequired
-    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @AuthenticationPrincipal Users user){
+    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @AuthenticationPrincipal SessionUser user){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
         boardService.createPost(user.getUserId(), title,content);

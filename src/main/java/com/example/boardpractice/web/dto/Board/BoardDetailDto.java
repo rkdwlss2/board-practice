@@ -1,6 +1,9 @@
 package com.example.boardpractice.web.dto.Board;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -8,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardDetailResponseDto {
+public class BoardDetailDto {
     private Long boardId;
     private String title;
     private String writer;
@@ -20,13 +23,5 @@ public class BoardDetailResponseDto {
     private LocalDateTime createDate;
     private LocalDateTime updatedDate;
     private LocalDateTime deleteDate;
-    private boolean isOwner;
 
-    public void createIsOnwer(String currentUserNickname){
-        if  (this.writer.equals(currentUserNickname)){
-            this.isOwner = true;
-        }else{
-            this.isOwner = false;
-        }
-    }
 }

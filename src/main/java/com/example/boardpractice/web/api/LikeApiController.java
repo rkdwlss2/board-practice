@@ -21,7 +21,7 @@ public class LikeApiController {
 
     @PostMapping("/boards/likes/{boardId}")
 //    @LoginRequired
-    public ResponseEntity<?> increaseLikes(@PathVariable Long boardId, @AuthenticationPrincipal Users user) {
+    public ResponseEntity<?> increaseLikes(@PathVariable Long boardId, @AuthenticationPrincipal SessionUser user) {
         Long userId = user.getUserId();
         boardlikeService.increaseLikes(boardId,userId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -29,7 +29,7 @@ public class LikeApiController {
 
     @DeleteMapping("/boards/likes/{boardId}")
 //    @LoginRequired
-    public ResponseEntity<?> decreaseLikes(@PathVariable Long boardId, @AuthenticationPrincipal Users user) {
+    public ResponseEntity<?> decreaseLikes(@PathVariable Long boardId, @AuthenticationPrincipal SessionUser user) {
         Long userId = user.getUserId();
         boardlikeService.decreaseLikes(boardId,userId);
         return new ResponseEntity<>(HttpStatus.OK);

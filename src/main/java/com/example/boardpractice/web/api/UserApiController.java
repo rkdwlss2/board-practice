@@ -46,7 +46,7 @@ public class UserApiController {
 
     @PutMapping("/users/me")
 //    @LoginRequired
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal Users user)
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal  SessionUser user)
     {
         Users responseUsers = userService.updateUserNickname(user.getUserId(),userUpdateRequestDto.getNickname());
 
@@ -55,7 +55,7 @@ public class UserApiController {
 
     @DeleteMapping("/users/me")
 //    @LoginRequired
-    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,@AuthenticationPrincipal Users user){
+    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,@AuthenticationPrincipal SessionUser user){
         String  email = userDeleteRequestDto.getEmail();
         userService.deleteUser(user.getUserId(),email);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -64,7 +64,7 @@ public class UserApiController {
 
     @PutMapping("/users/me/password")
 //    @LoginRequired
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,@AuthenticationPrincipal Users user)
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,@AuthenticationPrincipal SessionUser user)
     {
         String password = passwordUpdateRequestDto.getPassword();
         String confirmPassword = passwordUpdateRequestDto.getConfirmPassword();
@@ -101,9 +101,9 @@ public class UserApiController {
         return new ResponseEntity<>(new UserResponseDto(users),HttpStatus.OK);
     }
 
-    @GetMapping("/user/me")
+    @GetMapping("/users/me")
 //    @LoginRequired
-    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal Users user) {
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal SessionUser user) {
         return ResponseEntity.ok(user);
     }
 

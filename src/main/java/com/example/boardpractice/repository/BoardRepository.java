@@ -1,6 +1,7 @@
 package com.example.boardpractice.repository;
 
 import com.example.boardpractice.entity.Boards;
+import com.example.boardpractice.web.dto.Board.BoardDetailDto;
 import com.example.boardpractice.web.dto.Board.BoardDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.BoardResponseDto;
 import org.springframework.data.domain.Page;
@@ -24,12 +25,12 @@ public interface BoardRepository extends JpaRepository<Boards,Long> {
     )
     Page<BoardResponseDto> findAllWithCounts(Pageable pageable);
 
-    @Query("SELECT new com.example.boardpractice.web.dto.Board.BoardDetailResponseDto(b.boardId,b.title,u.nickname,count(DISTINCT l),count(DISTINCT c),b.viewCount,b.boardImageUrl,b.content,b.baseTimeEntity.createDate,b.baseTimeEntity.updatedDate,b.baseTimeEntity.deleteDate) "+
+    @Query("SELECT new com.example.boardpractice.web.dto.Board.BoardDetailDto(b.boardId,b.title,u.nickname,count(DISTINCT l),count(DISTINCT c),b.viewCount,b.boardImageUrl,b.content,b.baseTimeEntity.createDate,b.baseTimeEntity.updatedDate,b.baseTimeEntity.deleteDate) "+
            "FROM Boards b "+
            "LEFT JOIN b.likes l "+
            "LEFT JOIN b.user u " +
            "LEFT JOIN b.comments c "+
            "where b.boardId = :boardId"
     )
-    Optional<BoardDetailResponseDto> findByIdWithCounts(@Param("boardId")Long boardId);
+    Optional<BoardDetailDto> findByIdWithCounts(@Param("boardId")Long boardId);
 }

@@ -20,7 +20,7 @@ import java.util.List;
 public class Users {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 10,unique = true)
     private String nickname;
     @Column(nullable=false,unique = true)
     private String email;

@@ -23,8 +23,23 @@ public class BoardService {
         return boardRepository.findAllWithCounts(pageable);
     }
 
-    public BoardDetailResponseDto getPost(Long boardId){
-        return boardRepository.findByIdWithCounts(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾지 못했습니다."));
+    public BoardDetailResponseDto getPost(Long boardId,String currentUserNickname){
+        BoardDetailDto boardDetailDto = boardRepository.findByIdWithCounts(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾지 못했습니다."));
+        BoardDetailResponseDto boardDetailResponseDto = BoardDetailResponseDto.builder()
+                .boardId(boardId)
+                .title(boardDetailDto.getTitle())
+                .writer(boardDetailDto.getWriter())
+                .likeCount(boardDetailDto.getLikeCount())
+                .commentCount(boardDetailDto.getCommentCount())
+                .viewCount(boardDetailDto.getViewCount())
+                .boardImageUrl(boardDetailDto.getBoardImageUrl())
+                .content(boardDetailDto.getContent())
+                .createDate(boardDetailDto.getCreateDate())
+                .updatedDate(boardDetailDto.getUpdatedDate())
+                .deleteDate(boardDetailDto.getDeleteDate())
+                .build();
+        boardDetailResponseDto.createIsOnwer(currentUserNickname);
+        return boardDetailResponseDto;
     }
 
     public Boards findBoardById(Long boardId){

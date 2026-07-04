@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .httpBasic(basic->basic.disable())
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users/signup", "/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/signup", "/users/login","/boards/posts","/boards/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/boards/posts/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/boards/**").authenticated()

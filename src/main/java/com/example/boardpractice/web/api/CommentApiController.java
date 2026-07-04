@@ -29,7 +29,7 @@ public class CommentApiController {
 
     @PostMapping("/boards/posts/{boardId}/comment")
 //    @LoginRequired
-    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto, @AuthenticationPrincipal Users user){
+    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto, @AuthenticationPrincipal SessionUser user){
         String content = commentCreateRequestDto.getContent();
         Long userId = user.getUserId();
         CommentCreateResponseDto commentCreateResponseDto =commentService.createComment(boardId,userId,content);
