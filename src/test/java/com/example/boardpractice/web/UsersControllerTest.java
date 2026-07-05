@@ -1,6 +1,7 @@
 package com.example.boardpractice.web;
 
 import com.example.boardpractice.web.dto.user.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
@@ -348,5 +350,62 @@ public class UsersControllerTest {
         resultActions.andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("로그인 실패 테스트, 이메일 조건 불일치")
+    public void login_fail_Email_test() throws Exception {
+        // 회원가입
+        signup();
+        // Given 데이터 세팅
+        UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
+        userLoginRequestDto.setEmail("russell@gmail");
+        userLoginRequestDto.setPassword("Asdf!12345");
+
+        String requestBody = om.writeValueAsString(userLoginRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(post("/users/login")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.email").exists());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 테스트, 패스워드 조건 불일치")
+    public void login_fail_password_test() throws Exception {
+        // 회원가입
+        signup();
+        // Given 데이터 세팅
+        UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
+        userLoginRequestDto.setEmail("russell@gmail.com");
+        userLoginRequestDto.setPassword("Asdf12345");
+
+        String requestBody = om.writeValueAsString(userLoginRequestDto);
+        System.out.println("requestBody = "+requestBody);
+
+        // When 테스트 동작 수행 - API 호출
+        ResultActions resultActions = mvc.perform(post("/users/login")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = resultActions.andReturn()
+                .getResponse()
+                .getContentAsString();
+        System.out.println("responseBody = "+responseBody);
+
+        // Then 결과 검증 - 상태코드 확인
+        resultActions.andExpect(status().isUnprocessableContent())
+        .andExpect(jsonPath("$.password").exists());
+    }
+
 
 }

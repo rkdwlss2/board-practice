@@ -92,12 +92,6 @@ public class UserApiController {
         System.out.println("로그인 시 세션 ID: " + session.getId());
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
-//        Users responseUsers = userService.loginUser(email,password);
-//
-//        HttpSession session = request.getSession();
-//        //System.out.println("로그인 시 세션 ID: " + session.getId());
-//        session.setAttribute("loginUser",new SessionUser(responseUsers));
-
         return new ResponseEntity<>(new UserResponseDto(users),HttpStatus.OK);
     }
 
