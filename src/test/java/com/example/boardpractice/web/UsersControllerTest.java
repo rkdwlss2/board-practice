@@ -10,12 +10,14 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class UsersControllerTest {
@@ -28,16 +30,20 @@ public class UsersControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private MockHttpSession login() throws Exception{
+    private void signup() throws Exception{
         UserSignupRequestDto userSignupRequestDto = new UserSignupRequestDto();
         userSignupRequestDto.setEmail("russell@gmail.com");
         userSignupRequestDto.setPassword("Asdf!12345");
         userSignupRequestDto.setNickname("russell");
         // 회원가입
         mockMvc.perform(post("/users/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsBytes(userSignupRequestDto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsBytes(userSignupRequestDto)))
                 .andExpect(status().isCreated());
+
+    }
+
+    private MockHttpSession login() throws Exception{
 
 
         UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
@@ -180,6 +186,7 @@ public class UsersControllerTest {
     // 닉네임 공백 테스트
     @Test
     public void update_nickname_blank_fail_test() throws Exception {
+        signup();
         MockHttpSession session = login();
         // Given 데이터 세팅
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
@@ -206,6 +213,7 @@ public class UsersControllerTest {
     // 닉네임 띄어쓰기 테스트
     @Test
     public void update_nickname_space_fail_test() throws Exception {
+        signup();
         MockHttpSession session = login();
         // Given 데이터 세팅
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
@@ -232,6 +240,7 @@ public class UsersControllerTest {
     // 닉네임 1~10 자리 테스트
     @Test
     public void update_nickname_size_fail_test() throws Exception {
+        signup();
         MockHttpSession session = login();
         // Given 데이터 세팅
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
@@ -259,6 +268,7 @@ public class UsersControllerTest {
     // 회원 탈퇴 테스트
     @Test
     public void delete_user_success_test() throws Exception {
+        signup();
         MockHttpSession session = login();
         // Given 데이터 세팅
         UserDeleteRequestDto userDeleteRequestDto = new UserDeleteRequestDto();
@@ -286,6 +296,7 @@ public class UsersControllerTest {
     // 회원 탈퇴 이메일 오류 테스트
     @Test
     public void delete_user_faill_test() throws Exception {
+        signup();
         MockHttpSession session = login();
         // Given 데이터 세팅
         UserDeleteRequestDto userDeleteRequestDto = new UserDeleteRequestDto();
@@ -312,14 +323,8 @@ public class UsersControllerTest {
     // 유저 로그인 테스트
     @Test
     public void login_success_test() throws Exception {
-        UserSignupRequestDto userSignupRequestDto = new UserSignupRequestDto();
-        userSignupRequestDto.setEmail("russell@gmail.com");
-        userSignupRequestDto.setPassword("Asdf!12345");
-        userSignupRequestDto.setNickname("russell");
         // 회원가입
-        mockMvc.perform(post("/users/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsBytes(userSignupRequestDto)));
+        signup();
 
         // Given 데이터 세팅
         UserLoginRequestDto userLoginRequestDto = new UserLoginRequestDto();
