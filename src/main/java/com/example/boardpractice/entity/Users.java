@@ -7,6 +7,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Builder
@@ -24,7 +25,7 @@ public class Users {
     private String nickname;
     @Column(nullable=false,unique = true)
     private String email;
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 60)
     private String password;
     @Transient
     private String confirmPassword;
@@ -39,8 +40,9 @@ public class Users {
     })
     private FileInfo profileImageFile;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+//    @Enumerated(EnumType.STRING)
+//    private UserRole userRole;
+    String roles;
 
     @OneToMany(mappedBy = "user")
     private List<Boards> boards = new ArrayList<>();;
@@ -81,5 +83,13 @@ public class Users {
 
     public void updateEmailUser(String email){
         this.email = email;
+    }
+
+    // ENUM으로 안하고 ,로 해서 구분해서 ROLE을 입력 -> 그걸 파싱!!
+    public List<String> getRoleList(){
+        if(this.roles.length() > 0){
+            return Arrays.asList(this.roles.split(","));
+        }
+        return new ArrayList<>();
     }
 }

@@ -2,6 +2,7 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.common.utill.LoginRequired;
 import com.example.boardpractice.common.utill.LoginUser;
+import com.example.boardpractice.config.auth.PrincipalDetails;
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.service.UserService;
@@ -17,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,29 +46,34 @@ public class UserApiController {
 
     @PutMapping("/users/me")
 //    @LoginRequired
-    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal  SessionUser user)
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto,Authentication authentication)
     {
-        Users responseUsers = userService.updateUserNickname(user.getUserId(),userUpdateRequestDto.getNickname());
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+
+        Users responseUsers = userService.updateUserNickname(principal.getUser().getUserId(),userUpdateRequestDto.getNickname());
 
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
     @DeleteMapping("/users/me")
 //    @LoginRequired
-    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,@AuthenticationPrincipal SessionUser user){
+    public ResponseEntity<?> deleteAccount(@RequestBody @Valid UserDeleteRequestDto userDeleteRequestDto,Authentication authentication){
         String  email = userDeleteRequestDto.getEmail();
-        userService.deleteUser(user.getUserId(),email);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        userService.deleteUser(principal.getUser().getUserId(),email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     @PutMapping("/users/me/password")
 //    @LoginRequired
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,@AuthenticationPrincipal SessionUser user)
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto passwordUpdateRequestDto,Authentication authentication)
     {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+
         String password = passwordUpdateRequestDto.getPassword();
         String confirmPassword = passwordUpdateRequestDto.getConfirmPassword();
-        Users responseUsers = userService.updateUserPassword(user.getUserId(),password,confirmPassword);
+        Users responseUsers = userService.updateUserPassword(principal.getUser().getUserId(),password,confirmPassword);
 
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
@@ -97,8 +102,9 @@ public class UserApiController {
 
     @GetMapping("/users/me")
 //    @LoginRequired
-    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal SessionUser user) {
-        return ResponseEntity.ok(user);
+    public ResponseEntity<?> getUserInfo(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(principal.getUser());
     }
 
     @PostMapping(value = "/users/me/image",

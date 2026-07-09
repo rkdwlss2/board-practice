@@ -5,6 +5,7 @@ import com.example.boardpractice.exception.NotFoundException;
 import com.example.boardpractice.repository.BoardRepository;
 import com.example.boardpractice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import static aQute.bnd.annotation.headers.Category.database;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Users registerUser(String email, String nickname, String password) {
@@ -28,7 +30,8 @@ public class UserService {
         Users users = Users.builder()
                 .email(email)
                 .nickname(nickname)
-                .password(password)
+                .roles("ROLE_USER")
+                .password(passwordEncoder.encode(password))
                 .build();
         return userRepository.save(users);
     }

@@ -2,6 +2,7 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.common.utill.LoginRequired;
 import com.example.boardpractice.common.utill.LoginUser;
+import com.example.boardpractice.config.auth.PrincipalDetails;
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.CommentService;
 import com.example.boardpractice.web.dto.comment.*;
@@ -10,7 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +30,10 @@ public class CommentApiController {
 
     @PostMapping("/boards/posts/{boardId}/comment")
 //    @LoginRequired
-    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto, @AuthenticationPrincipal SessionUser user){
+    public ResponseEntity<?> createComment(@PathVariable Long boardId,@RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto, Authentication authentication){
         String content = commentCreateRequestDto.getContent();
-        Long userId = user.getUserId();
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Long userId = principal.getUser().getUserId();
         CommentCreateResponseDto commentCreateResponseDto =commentService.createComment(boardId,userId,content);
         return new ResponseEntity<>(commentCreateResponseDto,HttpStatus.OK);
     }

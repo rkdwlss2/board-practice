@@ -2,6 +2,7 @@ package com.example.boardpractice.web.api;
 
 import com.example.boardpractice.common.utill.LoginRequired;
 import com.example.boardpractice.common.utill.LoginUser;
+import com.example.boardpractice.config.auth.PrincipalDetails;
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
@@ -17,7 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,8 +36,10 @@ public class BoardApiController {
     }
 
     @GetMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> getDetailPost(@PathVariable Long boardId,@AuthenticationPrincipal SessionUser sessionUser){
-        String currentUserNickname = (sessionUser==null)?null:sessionUser.getNickname();
+    public ResponseEntity<?> getDetailPost(@PathVariable Long boardId,Authentication authentication){
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+
+        String currentUserNickname = principal.getUser().getNickname();
         BoardDetailResponseDto boardDetailResponseDto = boardService.getPost(boardId,currentUserNickname);
         return new ResponseEntity<>(boardDetailResponseDto,HttpStatus.OK);
     }
@@ -44,10 +47,11 @@ public class BoardApiController {
 
     @PostMapping("/boards/posts")
 //    @LoginRequired
-    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @AuthenticationPrincipal SessionUser user){
+    public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, Authentication authentication){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
-        boardService.createPost(user.getUserId(), title,content);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        boardService.createPost(principal.getUser().getUserId(), title,content);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
