@@ -61,8 +61,13 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardUpdateResponseDto updatePost(Long boardId, String title, String content) {
+    public BoardUpdateResponseDto updatePost(Long boardId, String title, String content, Long userId) {
         Boards board = findBoardById(boardId);
+
+        if (!board.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 글만 업데이트 할수 있습니다.");
+        }
+
         board.changeTitle(title);
         board.changeContent(content);
         return BoardUpdateResponseDto.builder()
@@ -71,8 +76,11 @@ public class BoardService {
     }
 
     @Transactional
-    public void deletePost(Long boardId) {
+    public void deletePost(Long boardId,Long userId) {
         Boards board = findBoardById(boardId);
+        if (!board.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 글만 업데이트 할수 있습니다.");
+        }
         boardRepository.deleteById(board.getBoardId());
     }
 }

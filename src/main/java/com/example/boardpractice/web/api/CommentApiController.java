@@ -37,15 +37,15 @@ public class CommentApiController {
     }
 
     @PutMapping("/boards/posts/comments/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId,@RequestBody CommentUpdateRequestDto commentUpdateRequestDto){
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,@RequestBody CommentUpdateRequestDto commentUpdateRequestDto, @AuthenticationPrincipal SessionUser user){
         String content = commentUpdateRequestDto.getContent();
-        CommentUpdateResponseDto commentUpdateResponseDto = commentService.updateComment(commentId,content);
+        CommentUpdateResponseDto commentUpdateResponseDto = commentService.updateComment(commentId,content,user.getUserId());
         return new ResponseEntity<>(commentUpdateResponseDto,HttpStatus.OK);
     }
 
     @DeleteMapping("/boards/posts/comment/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId){
-        commentService.deleteComment(commentId);
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal SessionUser user){
+        commentService.deleteComment(commentId,user.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

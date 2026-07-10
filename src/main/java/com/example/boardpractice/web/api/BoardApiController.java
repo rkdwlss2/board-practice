@@ -52,16 +52,16 @@ public class BoardApiController {
     }
 
     @PutMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody BoardRequestDto boardRequestDto){
+    public ResponseEntity<?> updateDetailPost(@PathVariable Long boardId, @RequestBody BoardRequestDto boardRequestDto,@AuthenticationPrincipal SessionUser user){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
-        BoardUpdateResponseDto boardUpdateResponseDto = boardService.updatePost(boardId,title,content);
+        BoardUpdateResponseDto boardUpdateResponseDto = boardService.updatePost(boardId,title,content,user.getUserId());
         return new ResponseEntity<>(boardUpdateResponseDto,HttpStatus.OK);
     }
 
     @DeleteMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId){
-        boardService.deletePost(boardId);
+    public ResponseEntity<?> deleteDetailPost(@PathVariable Long boardId,@AuthenticationPrincipal SessionUser user){
+        boardService.deletePost(boardId,user.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

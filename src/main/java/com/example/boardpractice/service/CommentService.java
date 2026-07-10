@@ -68,9 +68,13 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentUpdateResponseDto updateComment( Long commentId,  String content){
+    public CommentUpdateResponseDto updateComment( Long commentId,  String content,Long userId ){
         Comments comment = findCommentById(commentId);
         comment.changeContent(content);
+
+        if (comment.getUser().getUserId().equals(userId)){
+            throw new IllegalArgumentException("본인이 작성한 댓글만 업데이트 할수 있습니다.");
+        }
 
         return CommentUpdateResponseDto.builder()
                 .commentId(commentId)
@@ -78,8 +82,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId){
+    public void deleteComment(Long commentId,Long userId){
         Comments comment = findCommentById(commentId);
+        if (comment.getUser().getUserId().equals(userId)){
+            throw new IllegalArgumentException("본인이 작성한 댓글만 삭제 할수 있습니다.");
+        }
         commentRepository.deleteById(commentId);
     }
 

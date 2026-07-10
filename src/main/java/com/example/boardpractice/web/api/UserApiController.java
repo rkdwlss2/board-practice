@@ -73,27 +73,27 @@ public class UserApiController {
         return new ResponseEntity<>(new UserResponseDto(responseUsers),HttpStatus.OK);
     }
 
-    @PostMapping("/users/login")
-    public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request){
-        String email = userLoginRequestDto.getEmail();
-        String password = userLoginRequestDto.getPassword();
-
-        Users users = userService.loginUser(email,password);
-
-        SessionUser sessionUser = new SessionUser(users);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(sessionUser,null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-
-        SecurityContextHolder.setContext(context);
-
-        HttpSession session = request.getSession(true);
-        System.out.println("로그인 시 세션 ID: " + session.getId());
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-
-        return new ResponseEntity<>(new UserResponseDto(users),HttpStatus.OK);
-    }
+//    @PostMapping("/users/login")
+//    public ResponseEntity<?> userLogin(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto, HttpServletRequest request){
+//        String email = userLoginRequestDto.getEmail();
+//        String password = userLoginRequestDto.getPassword();
+//
+//        Users users = userService.loginUser(email,password);
+//
+//        SessionUser sessionUser = new SessionUser(users);
+//
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(sessionUser,null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+//        SecurityContext context = SecurityContextHolder.createEmptyContext();
+//        context.setAuthentication(authentication);
+//
+//        SecurityContextHolder.setContext(context);
+//
+//        HttpSession session = request.getSession(true);
+//        System.out.println("로그인 시 세션 ID: " + session.getId());
+//        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+//
+//        return new ResponseEntity<>(new UserResponseDto(users),HttpStatus.OK);
+//    }
 
     @GetMapping("/users/me")
 //    @LoginRequired

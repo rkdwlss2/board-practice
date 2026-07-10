@@ -24,7 +24,7 @@ public class Users {
     private String nickname;
     @Column(nullable=false,unique = true)
     private String email;
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     private String password;
     @Transient
     private String confirmPassword;
