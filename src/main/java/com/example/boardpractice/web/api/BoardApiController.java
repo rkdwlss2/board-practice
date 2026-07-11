@@ -47,8 +47,8 @@ public class BoardApiController {
     public ResponseEntity<?> createDetailPost(@RequestBody @Valid BoardRequestDto boardRequestDto, @AuthenticationPrincipal SessionUser user){
         String title = boardRequestDto.getTitle();
         String content = boardRequestDto.getContent();
-        boardService.createPost(user.getUserId(), title,content);
-        return new ResponseEntity<>(HttpStatus.OK);
+        BoardCreateResponseDto boardCreateResponseDto = boardService.createPost(user.getUserId(), title,content);
+        return new ResponseEntity<>(boardCreateResponseDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/boards/posts/{boardId}")

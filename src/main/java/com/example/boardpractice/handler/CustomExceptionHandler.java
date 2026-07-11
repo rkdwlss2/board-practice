@@ -4,6 +4,7 @@ import com.example.boardpractice.exception.NotFoundException;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -46,6 +47,13 @@ public class CustomExceptionHandler {
         return  new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String,String>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", ex.getMessage());
+        return  new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String,String>> handleAllException(Exception ex) {
         Map<String, String> errors = new HashMap<>();
@@ -54,7 +62,9 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
-        return new ResponseEntity<>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Map<String,String>> handleNullPointerException(NullPointerException e) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", "서버 내부 오류가 발생했습니다.");
+        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

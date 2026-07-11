@@ -9,6 +9,7 @@ import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.comment.CommentCreateResponseDto;
 import com.example.boardpractice.web.dto.comment.CommentUpdateResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +73,8 @@ public class CommentService {
         Comments comment = findCommentById(commentId);
         comment.changeContent(content);
 
-        if (comment.getUser().getUserId().equals(userId)){
-            throw new IllegalArgumentException("본인이 작성한 댓글만 업데이트 할수 있습니다.");
+        if (!comment.getUser().getUserId().equals(userId)){
+            throw new AccessDeniedException("본인이 작성한 댓글만 업데이트 할수 있습니다.");
         }
 
         return CommentUpdateResponseDto.builder()
@@ -84,8 +85,8 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId,Long userId){
         Comments comment = findCommentById(commentId);
-        if (comment.getUser().getUserId().equals(userId)){
-            throw new IllegalArgumentException("본인이 작성한 댓글만 삭제 할수 있습니다.");
+        if (!comment.getUser().getUserId().equals(userId)){
+            throw new AccessDeniedException("본인이 작성한 댓글만 삭제 할수 있습니다.");
         }
         commentRepository.deleteById(commentId);
     }

@@ -3,6 +3,7 @@ package com.example.boardpractice.web.dto.Board;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -20,13 +21,9 @@ public class BoardDetailResponseDto {
     private LocalDateTime createDate;
     private LocalDateTime updatedDate;
     private LocalDateTime deleteDate;
-    private boolean isOwner;
+    private Boolean isOwner;
 
     public void createIsOnwer(String currentUserNickname){
-        if  (this.writer.equals(currentUserNickname)){
-            this.isOwner = true;
-        }else{
-            this.isOwner = false;
-        }
+        this.isOwner = Objects.equals(this.writer, currentUserNickname);
     }
 }

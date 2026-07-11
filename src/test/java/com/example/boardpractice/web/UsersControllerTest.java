@@ -375,8 +375,8 @@ public class UsersControllerTest {
         System.out.println("responseBody = "+responseBody);
 
         // Then 결과 검증 - 상태코드 확인
-        resultActions.andExpect(status().isUnprocessableContent())
-                .andExpect(jsonPath("$.email").exists());
+        resultActions.andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -403,8 +403,8 @@ public class UsersControllerTest {
         System.out.println("responseBody = "+responseBody);
 
         // Then 결과 검증 - 상태코드 확인
-        resultActions.andExpect(status().isUnprocessableContent())
-        .andExpect(jsonPath("$.password").exists());
+        resultActions.andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 

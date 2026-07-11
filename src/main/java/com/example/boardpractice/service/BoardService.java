@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +66,7 @@ public class BoardService {
         Boards board = findBoardById(boardId);
 
         if (!board.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("본인이 작성한 글만 업데이트 할수 있습니다.");
+            throw new AccessDeniedException("본인이 작성한 글만 업데이트 할수 있습니다.");
         }
 
         board.changeTitle(title);
@@ -79,7 +80,7 @@ public class BoardService {
     public void deletePost(Long boardId,Long userId) {
         Boards board = findBoardById(boardId);
         if (!board.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("본인이 작성한 글만 업데이트 할수 있습니다.");
+            throw new AccessDeniedException("본인이 작성한 글만 삭제 할수 있습니다.");
         }
         boardRepository.deleteById(board.getBoardId());
     }

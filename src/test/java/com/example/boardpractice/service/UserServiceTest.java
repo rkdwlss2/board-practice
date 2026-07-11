@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserService userService;
@@ -43,6 +46,8 @@ public class UserServiceTest {
         // 명시화를 위해 BDD 모키토 사용
         given(userRepository.existsByEmail(dto.getEmail()))
                 .willReturn(false);
+        given(passwordEncoder.encode(dto.getPassword()))
+                .willReturn("encoded-password");
 
         given(userRepository.save(any(Users.class)))
                 .willReturn(user);
