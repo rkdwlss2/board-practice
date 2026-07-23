@@ -4,6 +4,7 @@ import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.web.dto.Board.BoardDetailDto;
 import com.example.boardpractice.web.dto.Board.BoardDetailResponseDto;
 import com.example.boardpractice.web.dto.Board.BoardResponseDto;
+import com.example.boardpractice.web.dto.Board.BoardSearchResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +34,18 @@ public interface BoardRepository extends JpaRepository<Boards,Long> {
            "where b.boardId = :boardId"
     )
     Optional<BoardDetailDto> findByIdWithCounts(@Param("boardId")Long boardId);
+    @Query(value =
+            "SELECT b.board_id, b.title, u.nickname, " +
+                    "       COUNT(DISTINCT l.like_id) AS likeCount, " +
+                    "       COUNT(DISTINCT c.comment_id) AS commentCount, " +
+                    "       b.view_count, b.create_date, b.updated_date, b.delete_date " +
+                    "FROM boards b " +
+                    "LEFT JOIN users u ON u.user_id = b.user_id AND u.delete_date IS NULL " +
+                    "LEFT JOIN likes l ON l.board_id = b.board_id " +
+                    "LEFT JOIN comments c ON c.board_board_id = b.board_id AND c.delete_date IS NULL " +
+                    "WHERE b.delete_date IS NULL " +
+                    "  AND MATCH(b.content) AGAINST(:keyword IN BOOLEAN MODE) " + // 올바른 MySQL 문법
+                    "GROUP BY b.board_id, b.title, u.nickname, b.view_count, b.create_date, b.updated_date, b.delete_date",
+            nativeQuery = true)
+    Page<BoardSearchResponseDto> findByContent(String keyword, Pageable pageable);
 }

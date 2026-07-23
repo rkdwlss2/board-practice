@@ -5,6 +5,7 @@ import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.repository.BoardRepository;
 import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.Board.*;
+import com.example.boardpractice.web.dto.user.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,5 +84,9 @@ public class BoardService {
             throw new AccessDeniedException("본인이 작성한 글만 삭제 할수 있습니다.");
         }
         boardRepository.deleteById(board.getBoardId());
+    }
+
+    public Page<BoardSearchResponseDto> searchPostsByKeyword(String keyword,Pageable pageable){
+        return boardRepository.findByContent(keyword,pageable);
     }
 }

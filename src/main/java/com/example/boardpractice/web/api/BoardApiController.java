@@ -76,6 +76,11 @@ public class BoardApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(value = "/boards/posts/search")
+    public ResponseEntity<?> searchPosts(@RequestParam("keyword") String keyword,@PageableDefault(page=0,size=10) Pageable pageable){
+        Page<BoardSearchResponseDto> result = boardService.searchPostsByKeyword(keyword,pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 
 }
