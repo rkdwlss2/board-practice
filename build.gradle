@@ -34,6 +34,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    implementation 'co.elastic.clients:elasticsearch-java:7.17.24'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     runtimeOnly 'com.h2database:h2'

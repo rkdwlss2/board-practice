@@ -21,6 +21,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class BoardApiController {
@@ -76,10 +79,20 @@ public class BoardApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/boards/posts/search")
-    public ResponseEntity<?> searchPosts(@RequestParam("keyword") String keyword,@PageableDefault(page=0,size=10) Pageable pageable){
-        Page<BoardSearchResponseDto> result = boardService.searchPostsByKeyword(keyword,pageable);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+//    @GetMapping(value = "/boards/posts/search")
+//    public ResponseEntity<?> searchPosts(@RequestParam("keyword") String keyword,@PageableDefault(page=0,size=10) Pageable pageable){
+//        Page<BoardSearchResponseDto> result = boardService.searchPostsByKeyword(keyword,pageable);
+//        return new ResponseEntity<>(result, HttpStatus.OK);
+//    }
+
+    @GetMapping("/boards/posts/search")
+    public ResponseEntity<List<PostDto>> search(
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) throws IOException {
+        List<PostDto> result = boardService.searchPosts(keyword, page, size);
+        return ResponseEntity.ok(result);
     }
 
 
