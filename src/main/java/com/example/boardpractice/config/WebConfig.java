@@ -1,7 +1,10 @@
 package com.example.boardpractice.config;
 
 import com.example.boardpractice.common.utill.LoginUserArgumentResolver;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -9,11 +12,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 @RequiredArgsConstructor
+@Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     private final LoginUserArgumentResolver loginUserArgumentResolver;
 
+    @Value("${cors.allowed-origins[3]}")
+    private String allowedOrigins;
+
+    @PostConstruct
+    public void init() {
+        log.info("==========================================");
+        log.info("Loaded CORS Allowed Origins: {}", allowedOrigins);
+        log.info("==========================================");
+    }
 
 
     private static final String CORS_URL_PATTERN = "/**";
