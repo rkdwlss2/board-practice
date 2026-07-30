@@ -1,6 +1,7 @@
 package com.example.boardpractice.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.example.boardpractice.config.RabbitMQConfig;
@@ -71,25 +72,18 @@ public class BoardService {
                 .user(user)
                 .build();
         Boards responseBoard =boardRepository.save(requestBoard);
-//        // 2. Elasticsearch에 등록 (Spring 내부에서 처리)
-//        BoardDocument doc = BoardDocument.from(responseBoard);
-//        try {
-//            esClient.index(i -> i
-//                    .index("boards")
-//                    .id(responseBoard.getBoardId().toString())
-//                    .document(doc)
-//            );
-//        } catch (Exception e) {
-//            // ES 저장 실패 시 로깅 또는 예외 처리
-//            log.error("Elasticsearch indexing failed", e);
-//        }
-        // 2. ES 저장은 큐에 맡기고 비즈니스 로직 종료 (응답 속도 상승!)
-        // Board 객체를 그대로 보내거나 DTO로 변환해서 보냅니다.
-        rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.ROUTING_KEY,
-                responseBoard // 실제로는 BoardResponseDto 같은 걸로 변환해서 보내는 걸 권장!
-        );
+        // 2. Elasticsearch에 등록 (Spring 내부에서 처리)
+        BoardDocument doc = BoardDocument.from(responseBoard);
+        try {
+            esClient.index(i -> i
+                    .index("boards")
+                    .id(responseBoard.getBoardId().toString())
+                    .document(doc)
+            );
+        } catch (Exception e) {
+            // ES 저장 실패 시 로깅 또는 예외 처리
+            log.error("Elasticsearch indexing failed", e);
+        }
         return  BoardCreateResponseDto.builder()
                 .boardId(responseBoard.getBoardId())
                 .build();
@@ -123,24 +117,20 @@ public class BoardService {
         int from = page * size;
 
         SearchResponse<PostDto> response = esClient.search(s -> s
-                        .index("board_index")
+                        .index("boards")
                         .from(from)
                         .size(size)
                         .query(q -> q
-                                .bool(b -> b
-                                        .must(m -> m
-                                                .multiMatch(mm -> mm
-                                                        .fields("title^2", "content") // 제목 가중치 2배
-                                                        .query(keyword)
-                                                )
-                                        )
-                                        .filter(f -> f
-                                                .term(t -> t.field("is_deleted").value(false)) // 삭제 안 된 글만
-                                        )
+                                .multiMatch(mm -> mm
+                                        .fields("title^2", "content")
+                                        .query(keyword)
                                 )
                         )
                         .sort(so -> so
-                                .field(f -> f.field("created_at").order(co.elastic.clients.elasticsearch._types.SortOrder.Desc))
+                                .field(f -> f
+                                        .field("createdAt")
+                                        .order(SortOrder.Desc)
+                                )
                         ),
                 PostDto.class
         );
