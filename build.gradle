@@ -22,7 +22,7 @@ dependencies {
     // Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-h2console'
+//    implementation 'org.springframework.boot:spring-boot-h2console'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -38,10 +38,13 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+    implementation platform('software.amazon.awssdk:bom:2.25.60')
+    implementation 'software.amazon.awssdk:s3'
+
     implementation 'co.elastic.clients:elasticsearch-java:8.18.1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    runtimeOnly 'com.h2database:h2'
+//    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testCompileOnly 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

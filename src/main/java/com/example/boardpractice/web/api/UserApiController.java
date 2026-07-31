@@ -98,17 +98,18 @@ public class UserApiController {
     @GetMapping("/users/me")
 //    @LoginRequired
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal SessionUser user) {
-        return ResponseEntity.ok(user);
+        Users responseUser = userService.getUserInfo(user.getUserId());
+        return ResponseEntity.ok(new UserResponseDto(responseUser));
     }
 
-    @PostMapping(value = "/users/me/image",
+    @PostMapping(value = "/users/me/{userId}/image",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addFile(
             @RequestPart("multipartFile")
-            MultipartFile file) throws FileUploadException {
+            MultipartFile file,@PathVariable Long userId) throws FileUploadException {
         FileInfoDto fileinfo = fileService.uploadFile(file);	//서버 내부 스토리지 저장
         //Long success = fileService.insertFileInfo(fileinfo);	//데이터베이스에 파일 정보 저장
-
+        userService.updateUserImage(userId,fileinfo.getFilePath());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

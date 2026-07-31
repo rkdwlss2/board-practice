@@ -32,12 +32,8 @@ public class Users {
     @Embedded
     BaseTimeEntity baseTimeEntity = new BaseTimeEntity();
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "imageUrl",column = @Column(name = "profile_image_url")),
-            @AttributeOverride(name = "introduction",column = @Column(name = "profile_introduction"))
-    })
-    private FileInfo profileImageFile;
+    @Column( length = 1000)
+    private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
@@ -81,5 +77,9 @@ public class Users {
 
     public void updateEmailUser(String email){
         this.email = email;
+    }
+
+    public void changeUserImageUrl(String imageUrl){
+        this.profileImageUrl = imageUrl;
     }
 }

@@ -68,4 +68,7 @@ public class Boards {
             this.content = content;
         }
     }
+    public void changeBoardImageUrl(String boardImageUrl) {
+        this.boardImageUrl = boardImageUrl;
+    }
 }

@@ -33,7 +33,7 @@ public class BoardApiController {
 
     @GetMapping("/boards/posts")
     public ResponseEntity<?> getPosts(@PageableDefault(page = 0, size = 10) Pageable pageable){
-        Page<BoardResponseDto> postResponseDtoList= boardService.getAllPosts(pageable);
+        Page<BoardListResponseDto> postResponseDtoList = boardService.getAllPosts(pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
@@ -72,11 +72,11 @@ public class BoardApiController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addFile(
             @RequestPart("multipartFile")
-            MultipartFile file,@PathVariable Long boardId) throws FileUploadException {
+            MultipartFile file,@PathVariable Long boardId,@AuthenticationPrincipal SessionUser user) throws FileUploadException {
         FileInfoDto fileinfo = fileService.uploadFile(file);	//서버 내부 스토리지 저장
         //Long success = fileService.insertFileInfo(fileinfo);	//데이터베이스에 파일 정보 저장
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        boardService.updateBoardImage(boardId,user.getUserId(),fileinfo.getFilePath());
+        return new ResponseEntity<>(fileinfo,HttpStatus.OK);
     }
 
 //    @GetMapping(value = "/boards/posts/search")

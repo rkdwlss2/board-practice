@@ -3,10 +3,14 @@ package com.example.boardpractice.service;
 import com.example.boardpractice.common.FileConstant;
 import com.example.boardpractice.common.utill.FileUtil;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +21,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+@RequiredArgsConstructor
 @Service
 public class FileService {
+
+    private final S3Client s3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
     @Value("${upload.directory}")
     private String uploadDirectory;
 
@@ -44,21 +55,26 @@ public class FileService {
             throw new FileUploadException("이미지 파일만 업로드할 수 있습니다.");
         }
 
-        //저장 파일명을 중복방지 고유명으로 변경
-        String newFileName = generateUniqueFileName(originalFileName);
-        Path filePath = Paths.get(uploadDirectory + File.separator + newFileName);
+        String key = "images/" + generateUniqueFileName(originalFileName);
 
-
-        //서버 내부 스토리지에 업로드
-        try {
-            Files.copy(file.getInputStream(), filePath);
-        } catch (IOException e) {
-            throw new FileUploadException("File upload exception. " + e.getStackTrace());
+        try{
+            s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .contentType(mimeType)
+                            .contentLength(file.getSize())
+                            .build(),
+                    RequestBody.fromInputStream(file.getInputStream(),file.getSize())
+            );
+        }catch (IOException e){
+            throw new FileUploadException("S3 upload failed.");
         }
+        String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + key;
 
         return new FileInfoDto(file.getContentType(),
                 file.getOriginalFilename(),
-                filePath.toString(),
+                fileUrl,
                 Long.toString(file.getSize()));
     }
 

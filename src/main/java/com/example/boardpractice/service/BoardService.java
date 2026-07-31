@@ -36,7 +36,7 @@ public class BoardService {
     private final RabbitTemplate rabbitTemplate;
     private final ElasticsearchClient esClient;
 
-    public Page<BoardResponseDto> getAllPosts(Pageable pageable){
+    public Page<BoardListResponseDto> getAllPosts(Pageable pageable){
         return boardRepository.findAllWithCounts(pageable);
     }
 
@@ -50,6 +50,7 @@ public class BoardService {
                 .commentCount(boardDetailDto.getCommentCount())
                 .viewCount(boardDetailDto.getViewCount())
                 .boardImageUrl(boardDetailDto.getBoardImageUrl())
+                .profileImageUrl(boardDetailDto.getProfileImageUrl())
                 .content(boardDetailDto.getContent())
                 .createDate(boardDetailDto.getCreateDate())
                 .updatedDate(boardDetailDto.getUpdatedDate())
@@ -143,5 +144,14 @@ public class BoardService {
 
     public Page<BoardSearchResponseDto> searchPostsByKeyword(String keyword,Pageable pageable){
         return boardRepository.findByContent(keyword,pageable);
+    }
+
+    @Transactional
+    public void updateBoardImage(Long boardId,Long userId, String imageUrl) {
+        Boards board = boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("게시글 찾지 못했습니다."));
+        if (!board.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("본인이 작성한 글만 이미지를 등록할 수 있습니다.");
+        }
+        board.changeBoardImageUrl(imageUrl);
     }
 }

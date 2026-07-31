@@ -64,4 +64,14 @@ public class UserService {
 
         return usersReq;
     }
+
+    public Users getUserInfo(Long userId) {
+        return userRepository.findById(userId).orElseThrow(()->new NotFoundException("사용자를 찾을수 없습니다."));
+    }
+
+    @Transactional
+    public void updateUserImage(Long userId, String imageUrl) {
+        Users user = findById(userId);
+        user.changeUserImageUrl(imageUrl);
+    }
 }

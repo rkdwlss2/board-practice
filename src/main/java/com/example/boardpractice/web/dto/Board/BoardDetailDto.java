@@ -19,6 +19,7 @@ public class BoardDetailDto {
     private Long commentCount;
     private Long viewCount;
     private String boardImageUrl;
+    private String profileImageUrl;
     private String content;
     private LocalDateTime createDate;
     private LocalDateTime updatedDate;

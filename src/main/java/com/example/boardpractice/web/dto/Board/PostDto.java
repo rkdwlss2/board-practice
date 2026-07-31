@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true) // ES 문서에 추가 필드가 있어도 에러 안 나도록 설정
 public class PostDto {
+    private Long boardId;
     private String id; // 문서 ID (_id)
 
     private String title; // 게시물 제목
