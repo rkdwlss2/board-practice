@@ -4,19 +4,14 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.example.boardpractice.config.RabbitMQConfig;
 import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.repository.BoardRepository;
-import com.example.boardpractice.repository.CommentRepository;
 import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.Board.*;
-import com.example.boardpractice.web.dto.user.SessionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +28,6 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final RabbitTemplate rabbitTemplate;
     private final ElasticsearchClient esClient;
 
     public Page<BoardListResponseDto> getAllPosts(Pageable pageable){
