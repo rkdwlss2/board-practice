@@ -5,8 +5,8 @@ COPY . .
 # 테스트 제외 후 실행 가능한 JAR 빌드
 RUN gradle build -x test
 
-# 2단계: 실행 스테이지 (최소한의 JRE만 포함)
-FROM openjdk:17-slim
+# 2단계: 실행 스테이지 (openjdk:17-slim 대신 안정적인 JRE 이미지 사용)
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # 빌드 스테이지에서 생성된 jar 복사
