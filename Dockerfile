@@ -1,15 +1,14 @@
-# 1단계: 빌드 스테이지 (Gradle 포함)
-FROM gradle:7.6-jdk17 AS builder
+# 1단계: 빌드 스테이지 (Gradle 8.5 + JDK 17 적용)
+FROM gradle:8.5-jdk17 AS builder
 WORKDIR /app
 COPY . .
-# 테스트 제외 후 실행 가능한 JAR 빌드
-RUN gradle build -x test
 
-# 2단계: 실행 스테이지 (openjdk:17-slim 대신 안정적인 JRE 이미지 사용)
+# --no-daemon 옵션을 주어 EC2 메모리 부족 방지
+RUN gradle build -x test --no-daemon
+
+# 2단계: 실행 스테이지 (JRE 17)
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-
-# 빌드 스테이지에서 생성된 jar 복사
 COPY --from=builder /app/build/libs/*-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
