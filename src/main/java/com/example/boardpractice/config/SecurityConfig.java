@@ -44,28 +44,33 @@ public class SecurityConfig {
                         new JsonLoginFilter(authenticationManager, objectMapper),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .authorizeHttpRequests(auth->auth
-                        // permitAll 인증 없이 접근 가능한 경로
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청
-                        .requestMatchers(HttpMethod.POST, "/users/signup", "/users/login").permitAll() // 회원가입 로그인
-                        .requestMatchers(HttpMethod.GET, "/boards/posts/**").permitAll() // 게시글 리스트 조회
-                        .requestMatchers("/h2-console/**").permitAll() // H2 콘솔
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll() // 정적 리소스
-                        //.requestMatchers("/boards/**").authenticated()
-                        //.requestMatchers("/users/me/**").authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        // CORS preflight 요청
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // user역할이 필요한 경우 인가
-                        .requestMatchers(HttpMethod.POST,"/boards/posts").hasRole("USER") // 게시글 생성
-                        .requestMatchers(HttpMethod.PUT,"/boards/posts/**").hasRole("USER") // 게시글 수정
-                        .requestMatchers(HttpMethod.DELETE,"/boards/posts/**").hasRole("USER") // 게시글 삭제
-                        .requestMatchers(HttpMethod.POST,"/boards/posts/{boardId}/comment").hasRole("USER") // 댓글 생성
-                        .requestMatchers(HttpMethod.PUT,"/boards/posts/comments/**").hasRole("USER") // 댓글 수정
-                        .requestMatchers(HttpMethod.DELETE,"/boards/posts/comment/**").hasRole("USER") // 댓글 삭제
-                        .requestMatchers(HttpMethod.DELETE,"/users/me").hasRole("USER") // 회원탈퇴
-                        .requestMatchers(HttpMethod.PUT,"/users/me/**").hasRole("USER") // 비밀번호 수정,닉네임 수정
-                        .requestMatchers(HttpMethod.POST,"/boards/likes/**").hasRole("USER") // 좋아요
-                        .requestMatchers(HttpMethod.DELETE,"/boards/likes/**").hasRole("USER") // 좋아요 취소
-                        // 명시되지 않은 모든 요청은 인증 필요
+                        // 1. 회원가입 및 로그인 (/api 붙은 경로와 안 붙은 경로 둘 다 허용)
+                        .requestMatchers("/api/users/signup", "/api/users/login", "/users/signup", "/users/login").permitAll()
+
+                        // 2. 게시글 목록/상세 조회
+                        .requestMatchers(HttpMethod.GET, "/api/boards/posts/**", "/boards/posts/**").permitAll()
+
+                        // 3. H2 콘솔 및 정적 리소스
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+
+                        // 4. USER 권한 필요 경로
+                        .requestMatchers(HttpMethod.POST, "/api/boards/posts", "/boards/posts").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/boards/posts/**", "/boards/posts/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/boards/posts/**", "/boards/posts/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/boards/posts/{boardId}/comment", "/boards/posts/{boardId}/comment").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/boards/posts/comments/**", "/boards/posts/comments/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/boards/posts/comment/**", "/boards/posts/comment/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/me", "/users/me").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/me/**", "/users/me/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/boards/likes/**", "/boards/likes/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/boards/likes/**", "/boards/likes/**").hasRole("USER")
+
+                        // 5. 그 외 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
