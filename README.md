@@ -154,6 +154,39 @@ PUT /boards
 
 애플리케이션은 기본적으로 `http://localhost:8080`에서 실행됩니다.
 
+## Docker 실행
+
+EC2에서는 환경변수를 이미지에 포함하지 말고 서버의 env 파일로 관리합니다.
+
+```bash
+sudo nano /etc/board-practice.env
+```
+
+```properties
+DB_ADDRESS=database-1.c36gqoimycz2.ap-northeast-2.rds.amazonaws.com:3306
+DB_USER=admin
+DB_PASSWORD=your-db-password
+PUBLIC_IP=13.125.36.40
+SPRING_PROFILES_ACTIVE=dev
+```
+
+```bash
+sudo chmod 600 /etc/board-practice.env
+docker compose up -d --build
+```
+
+로그 확인:
+
+```bash
+docker logs -f board-practice
+```
+
+중지:
+
+```bash
+docker compose down
+```
+
 ## 인증 방식
 
 Spring Security 기반 세션 인증을 사용합니다. 로그인은 `/users/login`에서 JSON 요청을 처리하는 커스텀 필터(`JsonLoginFilter`)로 동작합니다.
