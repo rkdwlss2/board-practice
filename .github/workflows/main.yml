@@ -11,6 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get GitHub Actions IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Add IP to Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id sg-03f8a7da49f40909e \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+              
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -35,3 +53,11 @@ jobs:
 
             # 5. 도커 컴포즈 재시동 및 빌드
             sudo docker compose up -d --build
+      - name: Remove IP from Security Group (Always Run)
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id sg-03f8a7da49f40909e \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
