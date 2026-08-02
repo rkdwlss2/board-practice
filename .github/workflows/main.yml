@@ -1,6 +1,7 @@
 name: Deploy to EC2 with Docker Compose
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main  # main 브랜치에 push 될 때 자동 배포
