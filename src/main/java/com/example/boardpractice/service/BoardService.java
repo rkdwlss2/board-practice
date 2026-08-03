@@ -4,8 +4,10 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.example.boardpractice.entity.BoardIndexFailure;
 import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.entity.Users;
+import com.example.boardpractice.repository.BoardIndexFailureRepository;
 import com.example.boardpractice.repository.BoardRepository;
 import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.Board.*;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final BoardIndexFailureRepository boardIndexFailureRepository;
     private final ElasticsearchClient esClient;
 
     public Page<BoardListResponseDto> getAllPosts(Pageable pageable){
@@ -76,8 +79,10 @@ public class BoardService {
                     .document(doc)
             );
         } catch (Exception e) {
-            // ES 저장 실패 시 로깅 또는 예외 처리
             log.error("Elasticsearch indexing failed", e);
+            boardIndexFailureRepository.save(
+                    BoardIndexFailure.create(responseBoard.getBoardId(), "boards", "INDEX", e)
+            );
         }
         return  BoardCreateResponseDto.builder()
                 .boardId(responseBoard.getBoardId())
@@ -134,10 +139,6 @@ public class BoardService {
         return response.hits().hits().stream()
                 .map(Hit::source)
                 .collect(Collectors.toList());
-    }
-
-    public Page<BoardSearchResponseDto> searchPostsByKeyword(String keyword,Pageable pageable){
-        return boardRepository.findByContent(keyword,pageable);
     }
 
     @Transactional

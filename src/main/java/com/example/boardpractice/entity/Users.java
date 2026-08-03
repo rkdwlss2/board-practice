@@ -82,4 +82,11 @@ public class Users {
     public void changeUserImageUrl(String imageUrl){
         this.profileImageUrl = imageUrl;
     }
+
+    public void reactivate(String nickname, String encodedPassword) {
+        this.nickname = nickname;
+        this.password = encodedPassword;
+        this.profileImageUrl = null;
+        this.baseTimeEntity.clearDeleteDate();
+    }
 }

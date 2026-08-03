@@ -11,7 +11,6 @@ Spring Boot 기반 게시판 API 프로젝트입니다. 회원 가입/로그인,
 - Spring Security
 - MySQL
 - Elasticsearch Java Client 7.17.24
-- RabbitMQ / Spring AMQP
 - Gradle
 - Lombok
 
@@ -50,8 +49,7 @@ Spring Boot 기반 게시판 API 프로젝트입니다. 회원 가입/로그인,
 ```text
 src/main/java/com/example/boardpractice
 ├── common          # 공통 유틸, AOP, 커스텀 애노테이션
-├── config          # Security, CORS, Elasticsearch, RabbitMQ 설정
-├── elasticsearch   # RabbitMQ 메시지 기반 ES 동기화 Consumer
+├── config          # Security, CORS, Elasticsearch 설정
 ├── entity          # JPA Entity
 ├── exception       # 커스텀 예외
 ├── handler         # 전역 예외 핸들러
@@ -69,21 +67,18 @@ src/main/java/com/example/boardpractice
 
 - MySQL: `localhost:3306`
 - Elasticsearch: `http://localhost:9200`
-- RabbitMQ: 기본 로컬 연결 설정
 
-기본 설정은 [application.yaml](src/main/resources/application.yaml)에 있습니다.
+기본 설정은 [application.yaml](src/main/resources/application.yaml)에 있고, 환경별 DB/Elasticsearch 주소는 profile 설정 파일에서 관리합니다.
 
 ```yaml
+# application-local.yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/boardpractice?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
+    url: jdbc:mysql://${DB_ADDRESS}/boardpractice?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   elasticsearch:
-    uris: http://localhost:9200
-  jpa:
-    hibernate:
-      ddl-auto: update
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
 ```
 
 ## Elasticsearch 인덱스 생성

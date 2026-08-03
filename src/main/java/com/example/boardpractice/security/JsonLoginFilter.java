@@ -86,7 +86,8 @@ public class JsonLoginFilter extends UsernamePasswordAuthenticationFilter {
             org.springframework.security.core.AuthenticationException failed
     ) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write("{\"message\":\"이메일 또는 비밀번호가 올바르지 않습니다.\"}");
     }
 }

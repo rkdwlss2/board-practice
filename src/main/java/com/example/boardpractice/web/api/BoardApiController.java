@@ -1,8 +1,5 @@
 package com.example.boardpractice.web.api;
 
-import com.example.boardpractice.common.utill.LoginRequired;
-import com.example.boardpractice.common.utill.LoginUser;
-import com.example.boardpractice.entity.Users;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.*;
@@ -78,12 +75,6 @@ public class BoardApiController {
         boardService.updateBoardImage(boardId,user.getUserId(),fileinfo.getFilePath());
         return new ResponseEntity<>(fileinfo,HttpStatus.OK);
     }
-
-//    @GetMapping(value = "/boards/posts/search")
-//    public ResponseEntity<?> searchPosts(@RequestParam("keyword") String keyword,@PageableDefault(page=0,size=10) Pageable pageable){
-//        Page<BoardSearchResponseDto> result = boardService.searchPostsByKeyword(keyword,pageable);
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
 
     @GetMapping("/boards/posts/search")
     public ResponseEntity<List<PostDto>> search(

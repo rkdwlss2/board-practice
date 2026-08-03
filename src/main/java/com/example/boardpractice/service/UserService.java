@@ -27,10 +27,21 @@ public class UserService {
         if(userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 사용 중인 이메일 입니다.");
         }
+
+        String encodedPassword = passwordEncoder.encode(password);
+
+        Users deletedUser = userRepository.findDeletedByEmail(email)
+                .orElse(null);
+
+        if (deletedUser != null) {
+            deletedUser.reactivate(nickname, encodedPassword);
+            return deletedUser;
+        }
+
         Users users = Users.builder()
                 .email(email)
                 .nickname(nickname)
-                .password(passwordEncoder.encode(password))
+                .password(encodedPassword)
                 .build();
         return userRepository.save(users);
     }

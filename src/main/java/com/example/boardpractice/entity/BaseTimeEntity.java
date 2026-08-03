@@ -25,4 +25,8 @@ public class BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedDate;
     private LocalDateTime deleteDate;
+
+    public void clearDeleteDate() {
+        this.deleteDate = null;
+    }
 }
