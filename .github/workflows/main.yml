@@ -11,31 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 소스 코드 가져오기 (가장 먼저 실행되어야 함)
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. Docker Hub 로그인
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # 3. Docker 이미지 빌드 및 푸시
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/board-backend:latest
-
-      # 4. GitHub Actions IP 가져오기
-      - name: Get GitHub Actions IP
+      - name: Get GitHub Actions IP성
         id: ip
         uses: haythem/public-ip@v1.3
-
-      # 5. AWS 인증 설정
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -43,7 +21,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # 6. 보안 그룹에 IP 추가 (SSH 허용)
       - name: Add IP to Security Group
         run: |
           aws ec2 authorize-security-group-ingress \
@@ -51,8 +28,10 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
+              
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # 7. EC2 접속 후 이미지 pull 및 실행
       - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -60,11 +39,20 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/app  # 실제 EC2 내 docker-compose.yml 위치 경로로 변경해주세요
-            docker compose pull
-            docker compose up -d --remove-orphans
+            # 1. 프로젝트 폴더로 이동 (본인의 EC2 프로젝트 경로로 변경해주세요)
+            cd /home/ec2-user/boardproject
 
-      # 8. 보안 그룹에서 IP 제거 (항상 실행)
+            # 2. 최신 코드 불러오기
+            git pull origin main
+
+            # 3. [선택] EC2 상에서 백엔드 미리 빌드 (도커 OOM 방지용)
+            cd board-practice && ./gradlew build -x test && cd ..
+
+            # 4. 도커 쓰레기 캐시 정량 청소 (용량 부족 방지)
+            sudo docker system prune -f
+
+            # 5. 도커 컴포즈 재시동 및 빌드
+            sudo docker compose up -d --build
       - name: Remove IP from Security Group (Always Run)
         if: always()
         run: |
