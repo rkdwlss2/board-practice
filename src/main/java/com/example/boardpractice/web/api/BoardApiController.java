@@ -77,12 +77,12 @@ public class BoardApiController {
     }
 
     @GetMapping("/boards/posts/search")
-    public ResponseEntity<List<PostDto>> search(
+    public ResponseEntity<List<BoardListResponseDto>> search(
             @RequestParam(name = "keyword") String keyword,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) throws IOException {
-        List<PostDto> result = boardService.searchPosts(keyword, page, size);
+        List<BoardListResponseDto> result = boardService.searchPosts(keyword, page, size);
         return ResponseEntity.ok(result);
     }
 

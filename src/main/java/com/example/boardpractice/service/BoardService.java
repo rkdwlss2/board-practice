@@ -20,7 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -70,20 +74,7 @@ public class BoardService {
                 .user(user)
                 .build();
         Boards responseBoard =boardRepository.save(requestBoard);
-        // 2. Elasticsearch에 등록 (Spring 내부에서 처리)
-        BoardDocument doc = BoardDocument.from(responseBoard);
-        try {
-            esClient.index(i -> i
-                    .index("boards")
-                    .id(responseBoard.getBoardId().toString())
-                    .document(doc)
-            );
-        } catch (Exception e) {
-            log.error("Elasticsearch indexing failed", e);
-            boardIndexFailureRepository.save(
-                    BoardIndexFailure.create(responseBoard.getBoardId(), "boards", "INDEX", e)
-            );
-        }
+        indexBoard(responseBoard, "INDEX");
         return  BoardCreateResponseDto.builder()
                 .boardId(responseBoard.getBoardId())
                 .build();
@@ -99,6 +90,7 @@ public class BoardService {
 
         board.changeTitle(title);
         board.changeContent(content);
+        indexBoard(board, "UPDATE");
         return BoardUpdateResponseDto.builder()
                 .boardId(board.getBoardId())
                 .build();
@@ -111,12 +103,13 @@ public class BoardService {
             throw new AccessDeniedException("본인이 작성한 글만 삭제 할수 있습니다.");
         }
         boardRepository.deleteById(board.getBoardId());
+        deleteBoardIndex(board.getBoardId());
     }
 
-    public List<PostDto> searchPosts(String keyword, int page, int size) throws IOException {
+    public List<BoardListResponseDto> searchPosts(String keyword, int page, int size) throws IOException {
         int from = page * size;
 
-        SearchResponse<PostDto> response = esClient.search(s -> s
+        SearchResponse<BoardDocument> response = esClient.search(s -> s
                         .index("boards")
                         .from(from)
                         .size(size)
@@ -132,12 +125,26 @@ public class BoardService {
                                         .order(SortOrder.Desc)
                                 )
                         ),
-                PostDto.class
+                BoardDocument.class
         );
 
-        // 검색 결과 DTO 변환
-        return response.hits().hits().stream()
-                .map(Hit::source)
+        List<Long> boardIds = response.hits().hits().stream()
+                .map(this::extractBoardId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (boardIds.isEmpty()) {
+            return List.of();
+        }
+
+        Map<Long, Integer> searchOrder = new HashMap<>();
+        for (int i = 0; i < boardIds.size(); i++) {
+            searchOrder.put(boardIds.get(i), i);
+        }
+
+        return boardRepository.findAllWithCountsByBoardIdIn(boardIds).stream()
+                .sorted(Comparator.comparingInt(board -> searchOrder.getOrDefault(board.getBoardId(), Integer.MAX_VALUE)))
                 .collect(Collectors.toList());
     }
 
@@ -148,5 +155,54 @@ public class BoardService {
             throw new AccessDeniedException("본인이 작성한 글만 이미지를 등록할 수 있습니다.");
         }
         board.changeBoardImageUrl(imageUrl);
+    }
+
+    private void indexBoard(Boards board, String operation) {
+        BoardDocument doc = BoardDocument.from(board);
+        try {
+            // Kibana Dev Tools:
+            // PUT /boards/_doc/{boardId}
+            // { "boardId": 1, "title": "...", "content": "...", "writer": "...", "createdAt": "..." }
+            esClient.index(i -> i
+                    .index("boards")
+                    .id(board.getBoardId().toString())
+                    .document(doc)
+            );
+        } catch (Exception e) {
+            log.error("Elasticsearch {} failed. boardId={}", operation, board.getBoardId(), e);
+            boardIndexFailureRepository.save(
+                    BoardIndexFailure.create(board.getBoardId(), "boards", operation, e)
+            );
+        }
+    }
+
+    private void deleteBoardIndex(Long boardId) {
+        try {
+            // Kibana Dev Tools:
+            // DELETE /boards/_doc/{boardId}
+            esClient.delete(d -> d
+                    .index("boards")
+                    .id(boardId.toString())
+            );
+        } catch (Exception e) {
+            log.error("Elasticsearch DELETE failed. boardId={}", boardId, e);
+            boardIndexFailureRepository.save(
+                    BoardIndexFailure.create(boardId, "boards", "DELETE", e)
+            );
+        }
+    }
+
+    private Long extractBoardId(Hit<BoardDocument> hit) {
+        BoardDocument source = hit.source();
+        if (source != null && source.getBoardId() != null) {
+            return source.getBoardId();
+        }
+
+        try {
+            return Long.valueOf(hit.id());
+        } catch (NumberFormatException e) {
+            log.warn("Elasticsearch hit id is not a board id. id={}", hit.id());
+            return null;
+        }
     }
 }

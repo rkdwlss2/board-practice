@@ -1,0 +1,12 @@
+services:
+  board-practice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: board-practice:dev
+    container_name: board-practice
+    env_file:
+      - /etc/board-practice.env
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

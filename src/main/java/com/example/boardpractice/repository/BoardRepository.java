@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +33,14 @@ public interface BoardRepository extends JpaRepository<Boards,Long> {
            "where b.boardId = :boardId"
     )
     Optional<BoardDetailDto> findByIdWithCounts(@Param("boardId")Long boardId);
+
+    @Query("SELECT new com.example.boardpractice.web.dto.Board.BoardListResponseDto(b.boardId,b.title,u.nickname,count(DISTINCT l),count(DISTINCT c),b.viewCount,u.profileImageUrl,b.baseTimeEntity.createDate,b.baseTimeEntity.updatedDate,b.baseTimeEntity.deleteDate) " +
+            "FROM Boards b "+
+            "LEFT JOIN b.likes l "+
+            "LEFT JOIN b.user u " +
+            "LEFT JOIN b.comments c "+
+            "WHERE b.boardId IN :boardIds " +
+            "GROUP BY b.boardId"
+    )
+    List<BoardListResponseDto> findAllWithCountsByBoardIdIn(@Param("boardIds") List<Long> boardIds);
 }
