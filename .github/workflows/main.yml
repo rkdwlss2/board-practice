@@ -28,7 +28,7 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-              
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
