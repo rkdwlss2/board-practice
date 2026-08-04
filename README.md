@@ -83,7 +83,7 @@ spring:
 
 ## Elasticsearch 인덱스 생성
 
-게시글 생성 시 `boards` 인덱스에 문서를 색인하고, 검색 API도 `boards` 인덱스를 조회합니다.
+애플리케이션 기동 시 `boards` 인덱스가 없으면 아래 설정으로 자동 생성합니다. 게시글 생성 시 `boards` 인덱스에 문서를 색인하고, 검색 API도 `boards` 인덱스를 조회합니다.
 
 ```http
 PUT /boards
