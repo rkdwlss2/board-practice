@@ -1,9 +1,5 @@
 package com.example.boardpractice.service;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.example.boardpractice.entity.BoardIndexFailure;
 import com.example.boardpractice.entity.Boards;
 import com.example.boardpractice.entity.Users;
@@ -13,6 +9,10 @@ import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.Board.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.SortOrder;
+import org.opensearch.client.opensearch.core.SearchResponse;
+import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,7 +35,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final BoardIndexFailureRepository boardIndexFailureRepository;
-    private final ElasticsearchClient esClient;
+    private final OpenSearchClient openSearchClient;
 
     public Page<BoardListResponseDto> getAllPosts(Pageable pageable){
         return boardRepository.findAllWithCounts(pageable);
@@ -109,7 +109,7 @@ public class BoardService {
     public List<BoardListResponseDto> searchPosts(String keyword, int page, int size) throws IOException {
         int from = page * size;
 
-        SearchResponse<BoardDocument> response = esClient.search(s -> s
+        SearchResponse<BoardDocument> response = openSearchClient.search(s -> s
                         .index("boards")
                         .from(from)
                         .size(size)
@@ -160,16 +160,16 @@ public class BoardService {
     private void indexBoard(Boards board, String operation) {
         BoardDocument doc = BoardDocument.from(board);
         try {
-            // Kibana Dev Tools:
+            // OpenSearch Dashboards Dev Tools:
             // PUT /boards/_doc/{boardId}
             // { "boardId": 1, "title": "...", "content": "...", "writer": "...", "createdAt": "..." }
-            esClient.index(i -> i
+            openSearchClient.index(i -> i
                     .index("boards")
                     .id(board.getBoardId().toString())
                     .document(doc)
             );
         } catch (Exception e) {
-            log.error("Elasticsearch {} failed. boardId={}", operation, board.getBoardId(), e);
+            log.error("OpenSearch {} failed. boardId={}", operation, board.getBoardId(), e);
             boardIndexFailureRepository.save(
                     BoardIndexFailure.create(board.getBoardId(), "boards", operation, e)
             );
@@ -178,14 +178,14 @@ public class BoardService {
 
     private void deleteBoardIndex(Long boardId) {
         try {
-            // Kibana Dev Tools:
+            // OpenSearch Dashboards Dev Tools:
             // DELETE /boards/_doc/{boardId}
-            esClient.delete(d -> d
+            openSearchClient.delete(d -> d
                     .index("boards")
                     .id(boardId.toString())
             );
         } catch (Exception e) {
-            log.error("Elasticsearch DELETE failed. boardId={}", boardId, e);
+            log.error("OpenSearch DELETE failed. boardId={}", boardId, e);
             boardIndexFailureRepository.save(
                     BoardIndexFailure.create(boardId, "boards", "DELETE", e)
             );
@@ -201,7 +201,7 @@ public class BoardService {
         try {
             return Long.valueOf(hit.id());
         } catch (NumberFormatException e) {
-            log.warn("Elasticsearch hit id is not a board id. id={}", hit.id());
+            log.warn("OpenSearch hit id is not a board id. id={}", hit.id());
             return null;
         }
     }

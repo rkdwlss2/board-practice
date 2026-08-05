@@ -1,8 +1,8 @@
 package com.example.boardpractice.config;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.opensearch.client.opensearch.OpenSearchClient;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -17,29 +17,29 @@ public class BoardIndexInitializer implements ApplicationRunner {
     private static final String INDEX_NAME = "boards";
     private static final String ANALYZER_NAME = "boards_content_analyzer";
 
-    private final ElasticsearchClient esClient;
+    private final OpenSearchClient openSearchClient;
 
     @Override
     public void run(ApplicationArguments args) {
         try {
-            if (esClient.indices().exists(e -> e.index(INDEX_NAME)).value()) {
-                log.info("Elasticsearch index already exists: {}", INDEX_NAME);
+            if (openSearchClient.indices().exists(e -> e.index(INDEX_NAME)).value()) {
+                log.info("OpenSearch index already exists: {}", INDEX_NAME);
                 return;
             }
 
             createBoardsIndex();
-            log.info("Elasticsearch index created: {}", INDEX_NAME);
+            log.info("OpenSearch index created: {}", INDEX_NAME);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to initialize Elasticsearch index: " + INDEX_NAME, e);
+            throw new IllegalStateException("Failed to initialize OpenSearch index: " + INDEX_NAME, e);
         }
     }
 
     private void createBoardsIndex() throws IOException {
-        esClient.indices().create(c -> c
+        openSearchClient.indices().create(c -> c
                 .index(INDEX_NAME)
                 .settings(s -> s
-                        .numberOfShards("1")
-                        .numberOfReplicas("1")
+                        .numberOfShards(1)
+                        .numberOfReplicas(1)
                         .analysis(a -> a
                                 .analyzer(ANALYZER_NAME, analyzer -> analyzer
                                         .custom(custom -> custom
