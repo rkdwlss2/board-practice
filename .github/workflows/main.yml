@@ -48,7 +48,7 @@ jobs:
             git pull origin master
 
             # 3. [선택] EC2 상에서 백엔드 미리 빌드 (도커 OOM 방지용)
-            cd board-practice && ./gradlew build -x test && cd ..
+            ./gradlew build -x test && cd ..
 
             # 4. 도커 쓰레기 캐시 정량 청소 (용량 부족 방지)
             sudo docker system prune -f
