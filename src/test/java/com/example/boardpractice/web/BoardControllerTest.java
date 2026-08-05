@@ -150,6 +150,19 @@ public class BoardControllerTest {
         // Then 결과 검증 - 상태코드 확인 , 게시판ID확인
         assertThat(boardDetailResponseDto.getBoardId()).isEqualTo(boardId);
         assertThat(boardDetailResponseDto.getTitle()).isEqualTo("오늘의 게시글 제목");
+        assertThat(boardDetailResponseDto.getViewCount()).isEqualTo(1L);
+
+        MvcResult secondResult = mvc.perform(get("/boards/posts/{boardId}",boardId)
+                        .session(session)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        BoardDetailResponseDto secondResponseDto = om.readValue(
+                secondResult.getResponse().getContentAsString(),
+                BoardDetailResponseDto.class
+        );
+        assertThat(secondResponseDto.getViewCount()).isEqualTo(2L);
     }
 
     @Test

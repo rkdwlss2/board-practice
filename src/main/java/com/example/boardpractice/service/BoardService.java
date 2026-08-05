@@ -41,7 +41,12 @@ public class BoardService {
         return boardRepository.findAllWithCounts(pageable);
     }
 
+    @Transactional
     public BoardDetailResponseDto getPost(Long boardId,String currentUserNickname){
+        int updatedCount = boardRepository.increaseViewCount(boardId);
+        if (updatedCount == 0) {
+            throw new IllegalArgumentException("게시글 찾지 못했습니다.");
+        }
         BoardDetailDto boardDetailDto = boardRepository.findByIdWithCounts(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾지 못했습니다."));
         BoardDetailResponseDto boardDetailResponseDto = BoardDetailResponseDto.builder()
                 .boardId(boardId)
@@ -134,18 +139,19 @@ public class BoardService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        if (boardIds.isEmpty()) {
-            return List.of();
-        }
+        return findBoardListByIds(boardIds);
+    }
 
-        Map<Long, Integer> searchOrder = new HashMap<>();
-        for (int i = 0; i < boardIds.size(); i++) {
-            searchOrder.put(boardIds.get(i), i);
-        }
+    public List<BoardListResponseDto> searchPostsByFullText(String keyword, int page, int size) {
+        int offset = page * size;
+        List<Long> boardIds = boardRepository.findBoardIdsByContentFullText(keyword, size, offset);
+        return findBoardListByIds(boardIds);
+    }
 
-        return boardRepository.findAllWithCountsByBoardIdIn(boardIds).stream()
-                .sorted(Comparator.comparingInt(board -> searchOrder.getOrDefault(board.getBoardId(), Integer.MAX_VALUE)))
-                .collect(Collectors.toList());
+    public List<BoardListResponseDto> searchPostsByLike(String keyword, int page, int size) {
+        int offset = page * size;
+        List<Long> boardIds = boardRepository.findBoardIdsByContentLike(keyword, size, offset);
+        return findBoardListByIds(boardIds);
     }
 
     @Transactional
@@ -204,5 +210,20 @@ public class BoardService {
             log.warn("OpenSearch hit id is not a board id. id={}", hit.id());
             return null;
         }
+    }
+
+    private List<BoardListResponseDto> findBoardListByIds(List<Long> boardIds) {
+        if (boardIds.isEmpty()) {
+            return List.of();
+        }
+
+        Map<Long, Integer> searchOrder = new HashMap<>();
+        for (int i = 0; i < boardIds.size(); i++) {
+            searchOrder.put(boardIds.get(i), i);
+        }
+
+        return boardRepository.findAllWithCountsByBoardIdIn(boardIds).stream()
+                .sorted(Comparator.comparingInt(board -> searchOrder.getOrDefault(board.getBoardId(), Integer.MAX_VALUE)))
+                .collect(Collectors.toList());
     }
 }

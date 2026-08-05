@@ -86,5 +86,24 @@ public class BoardApiController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/boards/posts/search/fulltext")
+    public ResponseEntity<List<BoardListResponseDto>> searchByFullText(
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        List<BoardListResponseDto> result = boardService.searchPostsByFullText(keyword, page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/boards/posts/search/like")
+    public ResponseEntity<List<BoardListResponseDto>> searchByLike(
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        List<BoardListResponseDto> result = boardService.searchPostsByLike(keyword, page, size);
+        return ResponseEntity.ok(result);
+    }
 
 }
