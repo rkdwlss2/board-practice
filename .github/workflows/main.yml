@@ -51,6 +51,13 @@ jobs:
             # 3. [선택] EC2 상에서 백엔드 미리 빌드 (도커 OOM 방지용)
             sudo ./gradlew build -x test && cd ..
 
+            # 2. [FE] ★ FE 패키지 폴더로 이동 및 최신 코드 pull 추가 ★
+            # (실제 EC2 내 FE 폴더 이름으로 변경해주세요)
+            cd /home/ec2-user/boardproject/board-practice-FE
+            git stash
+            git pull origin master
+            cd ..
+
             # 4. 도커 쓰레기 캐시 정량 청소 (용량 부족 방지)
             sudo docker system prune -f
 
