@@ -68,10 +68,29 @@ jobs:
           file: ./board-practice-FE/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/board-practice-frontend:latest
+  # 3. Redis 커스텀 이미지 빌드 & Docker Hub 푸시 (추가)
+  build-and-push-redis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and Push Redis Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./redis.Dockerfile  # 작성하신 Redis Dockerfile 경로
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/board-practice-redis:latest
   # 3. EC2 서버에 신규 이미지 배포
   deploy:
-    needs: [build-and-push-backend, build-and-push-frontend]
+    needs: [build-and-push-backend, build-and-push-frontend, build-and-push-redis]
     runs-on: ubuntu-latest
     steps:
       - name: Get GitHub Actions IP
