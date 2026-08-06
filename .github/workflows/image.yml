@@ -123,11 +123,10 @@ jobs:
           script: |
             cd /home/ec2-user/boardproject/board-practice
             git pull origin master
-            
-            # 최신 백엔드/프론트엔드 이미지 받아오기 및 컨테이너 재시동
+            sudo docker compose down
+            sudo docker rm -f board-backend board-frontend board-redis board-nginx 2>/dev/null || true
             sudo docker compose pull
             sudo docker compose up -d
-            sudo docker image prune -f
 
       - name: Remove IP from Security Group (Always Run)
         if: always()
