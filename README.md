@@ -2,6 +2,11 @@
 
 Spring Boot 기반 게시판 API 프로젝트입니다. 회원 가입/로그인, 게시글 CRUD, 댓글, 좋아요, 파일 업로드, OpenSearch 게시글 검색 기능을 포함합니다.
 
+## 관련 링크
+
+- [Figma draft](https://www.figma.com/design/qWsJLHs9mkiL9VKjHrdaYU/board-practice-Figma-draft?node-id=2-2&p=f&t=G6aC35WbpeIvmaDh-0)
+- [API 설계서](https://docs.google.com/spreadsheets/d/19TSP1DUNjSzVFpn31pWY3r7ZlEfz5WZxMNU5zR8tiTg/edit?usp=sharing)
+
 ## 기술 스택
 
 - Java 17
