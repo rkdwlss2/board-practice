@@ -23,6 +23,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 //    implementation 'org.springframework.boot:spring-boot-h2console'
+    // Spring Boot Starter Data Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

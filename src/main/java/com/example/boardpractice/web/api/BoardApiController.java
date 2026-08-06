@@ -1,10 +1,12 @@
 package com.example.boardpractice.web.api;
 
+import com.example.boardpractice.common.utill.ClientUtils;
 import com.example.boardpractice.service.BoardService;
 import com.example.boardpractice.service.FileService;
 import com.example.boardpractice.web.dto.Board.*;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
 import com.example.boardpractice.web.dto.user.SessionUser;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -35,9 +37,12 @@ public class BoardApiController {
     }
 
     @GetMapping("/boards/posts/{boardId}")
-    public ResponseEntity<?> getDetailPost(@PathVariable Long boardId,@AuthenticationPrincipal SessionUser sessionUser){
+    public ResponseEntity<?> getDetailPost(@PathVariable Long boardId,@AuthenticationPrincipal SessionUser sessionUser,
+                                           HttpServletRequest request){
+        // IP 추출
+        String clientIp = ClientUtils.getClientIp(request);
         String currentUserNickname = (sessionUser==null)?null:sessionUser.getNickname();
-        BoardDetailResponseDto boardDetailResponseDto = boardService.getPost(boardId,currentUserNickname);
+        BoardDetailResponseDto boardDetailResponseDto = boardService.getPost(boardId,currentUserNickname,clientIp);
         return new ResponseEntity<>(boardDetailResponseDto,HttpStatus.OK);
     }
 

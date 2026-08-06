@@ -15,11 +15,13 @@ import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -36,17 +38,27 @@ public class BoardService {
     private final UserRepository userRepository;
     private final BoardIndexFailureRepository boardIndexFailureRepository;
     private final OpenSearchClient openSearchClient;
-
+    private final StringRedisTemplate redisTemplate;
     public Page<BoardListResponseDto> getAllPosts(Pageable pageable){
         return boardRepository.findAllWithCounts(pageable);
     }
 
     @Transactional
-    public BoardDetailResponseDto getPost(Long boardId,String currentUserNickname){
-        int updatedCount = boardRepository.increaseViewCount(boardId);
-        if (updatedCount == 0) {
-            throw new IllegalArgumentException("게시글 찾지 못했습니다.");
+    public BoardDetailResponseDto getPost(Long boardId,String currentUserNickname,String clientIp){
+        String key = "view:post:" + boardId + ":ip:" + clientIp;
+
+        // SET key "1" NX EX 86400 (24시간 동안 유지)
+        Boolean isFirstVisit = redisTemplate.opsForValue()
+                .setIfAbsent(key, "1", Duration.ofHours(24));
+        int updatedCount=0;
+        if (Boolean.TRUE.equals(isFirstVisit)) {
+            updatedCount = boardRepository.increaseViewCount(boardId);
+            if (updatedCount == 0) {
+                throw new IllegalArgumentException("게시글 찾지 못했습니다.");
+            }
         }
+
+
         BoardDetailDto boardDetailDto = boardRepository.findByIdWithCounts(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾지 못했습니다."));
         BoardDetailResponseDto boardDetailResponseDto = BoardDetailResponseDto.builder()
                 .boardId(boardId)

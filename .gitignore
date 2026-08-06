@@ -36,3 +36,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/scripts/seed-boards.js
