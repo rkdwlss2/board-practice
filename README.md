@@ -1,6 +1,10 @@
-# board-practice
+# Arc'teryx Fit Board
 
-Spring Boot 기반 게시판 API 프로젝트입니다. 회원 가입/로그인, 게시글 CRUD, 댓글, 좋아요, 파일 업로드, OpenSearch 게시글 검색 기능을 포함합니다.
+아크테릭스 제품을 구매하기 전 필요한 착샷, 착용감, 사이즈 정보를 사용자들이 직접 공유하고 찾아볼 수 있는 커뮤니티 API 프로젝트입니다.
+
+단순 게시판이 아니라, 같은 제품을 입어 본 사람들의 실제 후기를 기반으로 구매 판단을 돕는 것을 목표로 합니다. 사용자는 게시글과 이미지를 통해 착용 사진을 올리고, 본문과 댓글로 체형별 핏, 사이즈 추천, 레이어링 조합, 실사용감을 나눌 수 있습니다.
+
+현재 백엔드는 회원 가입/로그인, 게시글 CRUD, 댓글, 좋아요, 이미지 업로드, OpenSearch 기반 검색 기능을 제공합니다.
 
 ## 관련 링크
 
@@ -19,6 +23,18 @@ Spring Boot 기반 게시판 API 프로젝트입니다. 회원 가입/로그인,
 - Gradle
 - Lombok
 
+## 서비스 목적
+
+아크테릭스 제품은 같은 사이즈라도 제품군, 핏, 레이어링 방식에 따라 착용감이 크게 달라질 수 있습니다. 이 프로젝트는 구매자가 공식 치수표만으로 알기 어려운 실제 착용 정보를 커뮤니티 데이터로 축적하기 위해 만들었습니다.
+
+주요 사용 흐름은 다음과 같습니다.
+
+- 사용자가 자신의 아크테릭스 착샷과 착용 후기를 게시글로 등록
+- 제품명, 사이즈, 체형, 착용감, 레이어링 정보를 본문에 기록
+- 다른 사용자가 댓글로 추가 질문이나 사이즈 조언을 남김
+- 좋아요와 조회수를 통해 참고 가치가 높은 게시글을 확인
+- OpenSearch 검색으로 원하는 제품명, 사이즈, 핏 키워드의 후기를 빠르게 탐색
+
 ## 주요 기능
 
 - 회원
@@ -28,26 +44,40 @@ Spring Boot 기반 게시판 API 프로젝트입니다. 회원 가입/로그인,
   - 닉네임 수정
   - 비밀번호 수정
   - 회원 탈퇴
+  - 프로필 이미지 업로드
 - 게시글
-  - 게시글 목록 조회
-  - 게시글 상세 조회
-  - 게시글 생성
-  - 게시글 수정
-  - 게시글 삭제
-  - 게시글 이미지 업로드
+  - 아크테릭스 착샷/후기 게시글 목록 조회
+  - 착용감, 사이즈 정보, 구매 참고 내용을 포함한 게시글 상세 조회
+  - 게시글 생성, 수정, 삭제
+  - 착샷 이미지 업로드
+  - 조회수 집계
 - 댓글
-  - 댓글 목록 조회
-  - 댓글 작성
-  - 댓글 수정
-  - 댓글 삭제
+  - 사이즈 문의, 착용감 질문, 구매 조언 댓글 작성
+  - 댓글 목록 조회, 수정, 삭제
 - 좋아요
-  - 게시글 좋아요
+  - 참고가 된 착샷/후기 게시글 좋아요
   - 게시글 좋아요 취소
   - 사용자/게시글 기준 중복 좋아요 방지
 - 검색
-  - OpenSearch 기반 제목/본문 검색
+  - OpenSearch 기반 제목/본문 검색으로 제품명, 사이즈, 핏 키워드 탐색
   - 제목 검색 가중치 적용
+  - 전체 텍스트 검색
+  - 좋아요 기준 검색 결과 정렬
   - 생성일 기준 정렬
+
+## 게시글 예시
+
+현재 게시글 모델은 `title`, `content`, `boardImageUrl`을 중심으로 구성되어 있으며, 사이즈와 착용감 정보는 본문에 함께 작성하는 방식입니다.
+
+```text
+제목: Beta AR M 사이즈 착용감 후기
+본문:
+- 키/몸무게: 178cm / 72kg
+- 평소 상의: 100-105
+- 착용 사이즈: M
+- 착용감: 얇은 플리스까지 레이어링 가능, 기장은 골반을 살짝 덮음
+- 구매 참고: 여유로운 핏을 원하면 정사이즈, 도심 착용 위주면 한 사이즈 다운도 고려
+```
 
 ## 프로젝트 구조
 
@@ -230,13 +260,15 @@ Content-Type: application/json
 
 | Method | Path | Description | Auth |
 | --- | --- | --- | --- |
-| GET | `/boards/posts` | 게시글 목록 조회 | No |
-| GET | `/boards/posts/{boardId}` | 게시글 상세 조회 | No |
-| POST | `/boards/posts` | 게시글 생성 | Yes |
-| PUT | `/boards/posts/{boardId}` | 게시글 수정 | Yes |
-| DELETE | `/boards/posts/{boardId}` | 게시글 삭제 | Yes |
-| POST | `/boards/posts/{boardId}/image` | 게시글 이미지 업로드 | Yes |
-| GET | `/boards/posts/search` | 게시글 검색 | No |
+| GET | `/boards/posts` | 착샷/후기 게시글 목록 조회 | No |
+| GET | `/boards/posts/{boardId}` | 착용감/사이즈 정보 상세 조회 | No |
+| POST | `/boards/posts` | 착샷/후기 게시글 생성 | Yes |
+| PUT | `/boards/posts/{boardId}` | 착샷/후기 게시글 수정 | Yes |
+| DELETE | `/boards/posts/{boardId}` | 착샷/후기 게시글 삭제 | Yes |
+| POST | `/boards/posts/{boardId}/image` | 착샷 이미지 업로드 | Yes |
+| GET | `/boards/posts/search` | 제목/본문 기반 게시글 검색 | No |
+| GET | `/boards/posts/search/fulltext` | 전체 텍스트 검색 | No |
+| GET | `/boards/posts/search/like` | 좋아요 기준 검색 | No |
 
 게시글 생성 요청 예시:
 
@@ -245,15 +277,15 @@ POST /boards/posts
 Content-Type: application/json
 
 {
-  "title": "게시글 제목",
-  "content": "게시글 내용"
+  "title": "Beta AR M 사이즈 착용감 후기",
+  "content": "178cm/72kg, 평소 100-105 착용. M 사이즈는 얇은 플리스까지 레이어링 가능했고 기장은 골반을 살짝 덮습니다."
 }
 ```
 
 검색 요청 예시:
 
 ```http
-GET /boards/posts/search?keyword=검색어&page=0&size=10
+GET /boards/posts/search?keyword=Beta%20AR%20M&page=0&size=10
 ```
 
 ### Comment
@@ -261,7 +293,7 @@ GET /boards/posts/search?keyword=검색어&page=0&size=10
 | Method | Path | Description | Auth |
 | --- | --- | --- | --- |
 | GET | `/boards/posts/{boardId}/comment` | 댓글 목록 조회 | No |
-| POST | `/boards/posts/{boardId}/comment` | 댓글 작성 | Yes |
+| POST | `/boards/posts/{boardId}/comment` | 사이즈 문의/구매 조언 댓글 작성 | Yes |
 | PUT | `/boards/posts/comments/{commentId}` | 댓글 수정 | Yes |
 | DELETE | `/boards/posts/comment/{commentId}` | 댓글 삭제 | Yes |
 
@@ -272,7 +304,7 @@ POST /boards/posts/{boardId}/comment
 Content-Type: application/json
 
 {
-  "content": "댓글 내용"
+  "content": "평소 105 입으면 L이 더 나을까요? 겨울에 아톰 LT랑 같이 입을 예정입니다."
 }
 ```
 
@@ -280,7 +312,7 @@ Content-Type: application/json
 
 | Method | Path | Description | Auth |
 | --- | --- | --- | --- |
-| POST | `/boards/likes/{boardId}` | 좋아요 | Yes |
+| POST | `/boards/likes/{boardId}` | 참고가 된 후기 좋아요 | Yes |
 | DELETE | `/boards/likes/{boardId}` | 좋아요 취소 | Yes |
 
 ## 데이터 삭제 정책
