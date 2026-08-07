@@ -15,6 +15,7 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,12 +36,13 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<?> createUser(@RequestBody @Valid UserSignupRequestDto userRequestDto){
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserSignupRequestDto userRequestDto, HttpServletRequest request){
 
         String email = userRequestDto.getEmail();
         String nickname = userRequestDto.getNickname();
         String password = userRequestDto.getPassword();
         Users responseUsers = userService.registerUser(email,nickname,password);
+        authenticateUser(responseUsers, request);
         return new ResponseEntity<>(new UserResponseDto(responseUsers), HttpStatus.CREATED);
     }
 
@@ -102,15 +104,47 @@ public class UserApiController {
         return ResponseEntity.ok(new UserResponseDto(responseUser));
     }
 
-    @PostMapping(value = "/users/me/{userId}/image",
+    @PostMapping(value = "/users/me/image",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addFile(
             @RequestPart("multipartFile")
-            MultipartFile file,@PathVariable Long userId) throws FileUploadException {
+            MultipartFile file, @AuthenticationPrincipal SessionUser user) throws FileUploadException {
+        return uploadUserImage(file, user.getUserId());
+    }
+
+    @PostMapping(value = "/users/me/{userId}/image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addFileWithUserId(
+            @RequestPart("multipartFile")
+            MultipartFile file, @PathVariable Long userId, @AuthenticationPrincipal SessionUser user) throws FileUploadException {
+        if (!user.getUserId().equals(userId)) {
+            throw new AccessDeniedException("본인의 프로필 이미지만 수정할 수 있습니다.");
+        }
+        return uploadUserImage(file, user.getUserId());
+    }
+
+    private ResponseEntity<?> uploadUserImage(MultipartFile file, Long userId) throws FileUploadException {
         FileInfoDto fileinfo = fileService.uploadFile(file);	//서버 내부 스토리지 저장
         //Long success = fileService.insertFileInfo(fileinfo);	//데이터베이스에 파일 정보 저장
         userService.updateUserImage(userId,fileinfo.getFilePath());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private void authenticateUser(Users users, HttpServletRequest request) {
+        SessionUser sessionUser = new SessionUser(users);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                sessionUser,
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     }
 
 }

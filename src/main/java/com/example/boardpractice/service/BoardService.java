@@ -233,4 +233,8 @@ public class BoardService {
                 .sorted(Comparator.comparingInt(board -> searchOrder.getOrDefault(board.getBoardId(), Integer.MAX_VALUE)))
                 .collect(Collectors.toList());
     }
+
+    public Page<BoardListResponseDto> getMyPosts(Long userId,Pageable pageable) {
+        return boardRepository.findAllWithCountsByUserId(userId,pageable);
+    }
 }

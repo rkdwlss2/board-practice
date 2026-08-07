@@ -70,6 +70,12 @@ public class BoardApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/users/me/posts")
+    public ResponseEntity<?> getUserPosts(@PageableDefault(page=0,size = 10) Pageable pageable,@AuthenticationPrincipal SessionUser user){
+        Page<BoardListResponseDto> posts = boardService.getMyPosts(user.getUserId(),pageable);
+        return ResponseEntity.ok(posts);
+    }
+
     @PostMapping(value = "/boards/posts/{boardId}/image",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addFile(

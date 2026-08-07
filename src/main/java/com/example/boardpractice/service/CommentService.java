@@ -33,6 +33,7 @@ public class CommentService {
             commentResponseDtoList.add(CommentUpdateResponseDto.builder()
                     .commentId(comments.getCommentId())
                     .content(comments.getContent())
+                    .profileImage(comments.getUser().getProfileImageUrl())
                     .writer(comments.getUser().getNickname())
                     .updatedDate(comments.getBaseTimeEntity().getUpdatedDate())
                     .createDate(comments.getBaseTimeEntity().getCreateDate())

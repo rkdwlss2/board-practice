@@ -15,6 +15,12 @@ public interface UserRepository extends JpaRepository<Users,Long> {
 
     boolean existsByEmail(String email);
 
+    @Query(value = "SELECT COUNT(*) FROM users WHERE nickname = :nickname", nativeQuery = true)
+    long countAnyByNickname(@Param("nickname") String nickname);
+
+    @Query(value = "SELECT COUNT(*) FROM users WHERE nickname = :nickname AND user_id <> :userId", nativeQuery = true)
+    long countAnyByNicknameAndUserIdNot(@Param("nickname") String nickname, @Param("userId") Long userId);
+
     @Query(value = "SELECT * FROM users WHERE email = :email AND delete_date IS NOT NULL", nativeQuery = true)
     Optional<Users> findDeletedByEmail(@Param("email") String email);
 }

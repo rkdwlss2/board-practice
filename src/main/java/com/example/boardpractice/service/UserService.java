@@ -34,8 +34,15 @@ public class UserService {
                 .orElse(null);
 
         if (deletedUser != null) {
+            if (userRepository.countAnyByNicknameAndUserIdNot(nickname, deletedUser.getUserId()) > 0) {
+                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            }
             deletedUser.reactivate(nickname, encodedPassword);
             return deletedUser;
+        }
+
+        if (userRepository.countAnyByNickname(nickname) > 0) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
         Users users = Users.builder()
@@ -53,6 +60,9 @@ public class UserService {
     @Transactional
     public Users updateUserNickname(Long userId,String nickname) {
         Users users = findById(userId);
+        if (userRepository.countAnyByNicknameAndUserIdNot(nickname, userId) > 0) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
         users.makeUserNickname(nickname);
         return users;
     }

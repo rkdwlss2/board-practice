@@ -47,6 +47,10 @@ cloud:
 upload:
   directory: ./uploads
 
+groq:
+  api-key: ${GROQ_API_KEY:}
+  model: ${GROQ_MODEL:qwen/qwen3.6-27b}
+
 logging:
   level:
     org:

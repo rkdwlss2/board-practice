@@ -68,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/boards/posts/comment/**", "/boards/posts/comment/**").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/me", "/users/me").hasRole("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/users/me/**", "/users/me/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/users/me/image", "/users/me/image").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/users/me/*/image", "/users/me/*/image").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/api/boards/likes/**", "/boards/likes/**").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/boards/likes/**", "/boards/likes/**").hasRole("USER")
 

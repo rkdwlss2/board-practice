@@ -49,6 +49,17 @@ public interface BoardRepository extends JpaRepository<Boards,Long> {
     )
     List<BoardListResponseDto> findAllWithCountsByBoardIdIn(@Param("boardIds") List<Long> boardIds);
 
+    @Query("SELECT new com.example.boardpractice.web.dto.Board.BoardListResponseDto(" +
+            "b.boardId,b.title,u.nickname,count(DISTINCT l),count(DISTINCT c),b.viewCount,u.profileImageUrl," +
+            "b.baseTimeEntity.createDate,b.baseTimeEntity.updatedDate,b.baseTimeEntity.deleteDate) " +
+            "FROM Boards b " +
+            "LEFT JOIN b.likes l " +
+            "LEFT JOIN b.user u " +
+            "LEFT JOIN b.comments c " +
+            "WHERE u.userId = :userId " +
+            "GROUP BY b.boardId")
+    Page<BoardListResponseDto> findAllWithCountsByUserId(@Param("userId") Long userId, Pageable pageable);
+
     @Query(value = """
             SELECT b.board_id
             FROM boards b

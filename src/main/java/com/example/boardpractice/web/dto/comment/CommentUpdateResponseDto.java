@@ -12,6 +12,7 @@ public class CommentUpdateResponseDto {
     private Long commentId;
     private String writer;
     private String content;
+    private String profileImage;
     private LocalDateTime writeDate;
     private LocalDateTime createDate;
     private LocalDateTime updatedDate;
