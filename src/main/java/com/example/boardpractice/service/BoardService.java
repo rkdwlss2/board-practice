@@ -136,12 +136,7 @@ public class BoardService {
                                         .query(keyword)
                                 )
                         )
-                        .sort(so -> so
-                                .field(f -> f
-                                        .field("createdAt")
-                                        .order(SortOrder.Desc)
-                                )
-                        ),
+                        ,
                 BoardDocument.class
         );
 
