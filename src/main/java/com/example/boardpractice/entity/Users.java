@@ -62,11 +62,10 @@ public class Users {
         this.nickname = nickname;
     }
 
-    public void checkPasswordConfirm(String newPassword, String confirmPassword){
-        if (!newPassword.equals(confirmPassword)){ // 비밀번호 일치 불일치 로직
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-        }
-        this.password=newPassword;
+
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 
     public void checkPassword(String loginPassword){

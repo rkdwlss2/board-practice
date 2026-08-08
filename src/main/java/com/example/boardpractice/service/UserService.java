@@ -68,8 +68,15 @@ public class UserService {
     }
     @Transactional
     public Users updateUserPassword(Long userId, String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException(
+                    "비밀번호와 비밀번호 확인이 일치하지 않습니다."
+            );
+        }
+
         Users users = findById(userId);
-        users.checkPasswordConfirm(password, confirmPassword);
+
+        users.changePassword(passwordEncoder.encode(password));
         return users;
     }
     @Transactional
