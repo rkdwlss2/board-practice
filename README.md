@@ -8,6 +8,7 @@
 
 ## 관련 링크
 
+- [프로젝트 소개 동영상](https://www.youtube.com/watch?v=b8WDZwWoiVk)
 - [Figma draft](https://www.figma.com/design/qWsJLHs9mkiL9VKjHrdaYU/board-practice-Figma-draft?node-id=2-2&p=f&t=G6aC35WbpeIvmaDh-0)
 - [API 설계서](https://docs.google.com/spreadsheets/d/19TSP1DUNjSzVFpn31pWY3r7ZlEfz5WZxMNU5zR8tiTg/edit?usp=sharing)
 - [ERD](https://www.erdcloud.com/d/g5TxBGgkHb2NkNmHo)
