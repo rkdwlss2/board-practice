@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -104,30 +105,41 @@ public class UserApiController {
         return ResponseEntity.ok(new UserResponseDto(responseUser));
     }
 
-    @PostMapping(value = "/users/me/image",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addFile(
-            @RequestPart("multipartFile")
-            MultipartFile file, @AuthenticationPrincipal SessionUser user) throws FileUploadException {
-        return uploadUserImage(file, user.getUserId());
+    public record UserImageRequest(String imageUrl) {
     }
 
-    @PostMapping(value = "/users/me/{userId}/image",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/users/me/image")
+    public ResponseEntity<?> addFile(
+            @RequestBody UserImageRequest request, @AuthenticationPrincipal SessionUser user) throws FileUploadException {
+        return uploadUserImage( user.getUserId(),request.imageUrl());
+    }
+
+
+
+    @PostMapping(value = "/users/me/{userId}/image")
     public ResponseEntity<?> addFileWithUserId(
-            @RequestPart("multipartFile")
-            MultipartFile file, @PathVariable Long userId, @AuthenticationPrincipal SessionUser user) throws FileUploadException {
+            @PathVariable Long userId,
+            @RequestBody UserImageRequest request,
+            @AuthenticationPrincipal SessionUser user) throws FileUploadException {
         if (!user.getUserId().equals(userId)) {
             throw new AccessDeniedException("본인의 프로필 이미지만 수정할 수 있습니다.");
         }
-        return uploadUserImage(file, user.getUserId());
+        return uploadUserImage(user.getUserId(),request.imageUrl());
     }
 
-    private ResponseEntity<?> uploadUserImage(MultipartFile file, Long userId) throws FileUploadException {
-        FileInfoDto fileinfo = fileService.uploadFile(file);	//서버 내부 스토리지 저장
+    private ResponseEntity<?> uploadUserImage(Long userId,String imageUrl) throws FileUploadException {
+//        FileInfoDto fileinfo = fileService.uploadFile(file);	//s3 스토리지 저장
         //Long success = fileService.insertFileInfo(fileinfo);	//데이터베이스에 파일 정보 저장
-        userService.updateUserImage(userId,fileinfo.getFilePath());
+        userService.updateUserImage(userId,imageUrl);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/users/me/presigned-url")
+    public ResponseEntity<?> getPresignedUrl(@RequestBody Map<String, String> request) {
+        String filename = request.get("filename");
+        String filteType = request.get("filetype");
+        String presignedUrl = fileService.generatePresignedUrl(filename, filteType);
+        return new ResponseEntity<>(Map.of("presignedUrl",presignedUrl), HttpStatus.OK);
     }
 
     private void authenticateUser(Users users, HttpServletRequest request) {

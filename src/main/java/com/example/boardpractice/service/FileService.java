@@ -2,6 +2,8 @@ package com.example.boardpractice.service;
 
 import com.example.boardpractice.common.FileConstant;
 import com.example.boardpractice.common.utill.FileUtil;
+import com.example.boardpractice.config.S3Config;
+import com.example.boardpractice.repository.UserRepository;
 import com.example.boardpractice.web.dto.file.FileInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -11,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +32,7 @@ public class FileService {
 
     private final S3Client s3Client;
 
+    private final S3Config s3Config;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -92,5 +98,20 @@ public class FileService {
         String randomNumber = Integer.toString(random.nextInt(Integer.MAX_VALUE));
         String timeStamp = dateFormat.format(new Date());
         return timeStamp + randomNumber + originalFileName;
+    }
+
+    public String generatePresignedUrl(String filename, String contentType){
+        String s3Key = "uploads/" + UUID.randomUUID() + "_" + filename;
+
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(s3Key)
+                .contentType(contentType)
+                .build();;
+
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .putObjectRequest(objectRequest).build();
+        return s3Config.s3Presigner().presignPutObject(presignRequest).url().toString();
     }
 }

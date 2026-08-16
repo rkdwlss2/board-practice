@@ -51,6 +51,7 @@ public class SecurityConfig {
 
                         // 1. 회원가입 및 로그인 (/api 붙은 경로와 안 붙은 경로 둘 다 허용)
                         .requestMatchers("/api/users/signup", "/api/users/login", "/users/signup", "/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/me/presigned-url", "/users/me/presigned-url").permitAll()
 
                         // 2. 게시글 목록/상세 조회
                         .requestMatchers(HttpMethod.GET, "/api/boards/posts/**", "/boards/posts/**").permitAll()
